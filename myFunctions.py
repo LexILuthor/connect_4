@@ -10,12 +10,14 @@ def is_winning(matrix, last_move_column, empty=0, red=-1, yellow=1):
     while cell_value == empty:
         last_move_row = last_move_row + 1
         cell_value = matrix[last_move_row][last_move_column]
-    # first we check if below the last move there are three gettoni of the same color
-    if matrix[last_move_row + 1][last_move_column] == cell_value:
-        # if the sum of the following three values is tree then they are all of the same color
-        tmp_sum = sum(matrix[last_move_row + 1:last_move_row + 4, last_move_column])
-        if abs(tmp_sum) == 3:
-            return True
+    # first we check if below the last move there are three gettoni of the same color (we do it only if we are above the third row)
+    ################################################## need to ad a check that the last row has at least 3 other rows below
+    if last_move_row < len(matrix) - 3:
+        if matrix[last_move_row + 1][last_move_column] == cell_value:
+            # if the sum of the following three values is tree then they are all of the same color
+            tmp_sum = sum(matrix[last_move_row + 1:last_move_row + 4, last_move_column])
+            if abs(tmp_sum) == 3:
+                return True
 
     # second we check the positive diagonal
     counter = 0
@@ -54,6 +56,31 @@ def is_winning(matrix, last_move_column, empty=0, red=-1, yellow=1):
                                                                        direction=-1)
     if counter >= 3:
         return True
+
+    # fourth we check on the same row
+    counter = 0
+    current_column = last_move_column - 1
+
+    # check on the left
+    while current_column >= 0:
+        if matrix[last_move_row][current_column] == cell_value:
+            current_column = current_column - 1
+            counter = counter + 1
+        else:
+            break
+
+    # check on the right
+    current_column = last_move_column + 1
+    while current_column <= len(matrix[0]):
+        if matrix[last_move_row][current_column] == cell_value:
+            current_column = current_column + 1
+            counter = counter + 1
+        else:
+            break
+
+    if counter >= 3:
+        return True
+
     return False
 
 
