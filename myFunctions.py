@@ -39,15 +39,11 @@ def play_a_game(value_function, number_of_rows=6, number_of_columns=7):
     # initialize an empty board
     board = np.zeros((number_of_rows, number_of_columns))
 
-
     agent_color = 1
     ambient_color = -1
 
     # the agent makes his move based on the value function
     possible_states = secFun.states_that_can_be_reached_from(board, agent_color)
-
-    for i in possible_states:
-        print_board(i)
 
 
 def is_winning(board, last_move_column, empty=0, red=-1, yellow=1):
