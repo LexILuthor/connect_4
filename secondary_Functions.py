@@ -50,9 +50,8 @@ def ambient_move(board, ambient_color, empty=0):
     return ambient_move_row, ambient_move_column
 
 
-def agent_move_following_epsilon_value_function(board, agent_color, epsilon, value_function, empty=0,
-                                                default_value_function=0):
-    # if the state we are considering has no vale we set it to default_value_function
+def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, default_value_of_Q=0):
+    # if the state we are considering has no vale we set it to default_value_of_Q
 
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
@@ -65,16 +64,17 @@ def agent_move_following_epsilon_value_function(board, agent_color, epsilon, val
         max_value = -np.inf
         possible_choices = []
         for state in possible_states:
-            value_of_state = value_function.get(np.ndenumerate(state), None)
+            value_of_state = Q.get(np.ndenumerate(state), None)
             if value_of_state is None:
-                value_of_state = default_value_function
+                value_of_state = default_value_of_Q
 
             if value_of_state > max_value:
                 del possible_choices[:]
                 possible_choices.append(state)
                 max_value = value_of_state
 
-            # this elif is actually useless because the confrontation between float can't be equal (this is how it works in C++)
+            # this elif is actually useless because the confrontation between float can't be equal
+            # (this is how it works in C++)
             elif value_of_state == max_value:
                 possible_choices.append(state)
         chosen_state = possible_choices[randint(0, len(possible_choices) - 1)]
@@ -110,7 +110,8 @@ def get_last_occupied_row_in_column(board, column, empty=0):
 
 
 def is_full(board, empty=0):
-    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros there are in board[0]
+    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros
+    # there are in board[0]
     if np.count_nonzero(board[0] == empty) == 0:
         return True
     return False

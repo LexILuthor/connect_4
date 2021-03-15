@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from random import *
 
 import secondary_Functions as secFun
 
 
-def print_board(board, empty=0, red=-1, yellow=1):
+def print_board(board, empty=0, red=-1):
+    # yellow = 1
     empty_x = []
     empty_y = []
     red_x = []
@@ -36,7 +36,11 @@ def print_board(board, empty=0, red=-1, yellow=1):
     fig.show()
 
 
-def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns=7, print_stuff=False):
+def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
+                rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
+    # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
+    # draw action, nothing happens action
+
     # initialize an empty board
     board = np.zeros((number_of_rows, number_of_columns), dtype=np.int8)
 
@@ -45,32 +49,34 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
     ambient_color = -1
 
     # states reached during this game
-    states_reached = []
 
-    agent_win = False
-    is_a_draw = False
+    # we will be able t recognize the terminal states because r will be != 0
+    SA_intermediate_state = []
+    r = []
+    S_prime = []
 
     while True:
 
         # agent makes a move
-        agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_value_function(board, agent_color,
-                                                                                               epsilon, value_function,
-                                                                                               empty)
-        states_reached.append(board)
+        agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
+        SA_intermediate_state.append(board)
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
-        #if print_stuff:
-        #   print_board(board, empty)
+        if print_stuff:
+            print_board(board, empty)
         # --------------------------------------------------------------------------------------------------------------
 
         # check if the agent won
         if secFun.is_winning(board, agent_move_column, agent_move_row, empty):
-            agent_win = True
+            # Since we are in a terminal state S_prime is not important
+            S_prime.append(board)
+            r.append(rewards_Wi_Lo_Dr_De[0])
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
-            is_a_draw = True
+            S_prime.append(board)
+            r.append(rewards_Wi_Lo_Dr_De[2])
             break
 
         # ambient makes a (random) move
@@ -78,13 +84,19 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
-            agent_win = False
+            S_prime.append(board)
+            r.append(rewards_Wi_Lo_Dr_De[1])
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
-            is_a_draw = True
+            S_prime.append(board)
+            r.append(rewards_Wi_Lo_Dr_De[2])
             break
+
+        # it was a "nothing happens" action
+        S_prime.append(board)
+        r.append(rewards_Wi_Lo_Dr_De[3])
 
     # --------------------------------------------------------------------------------------------------------------
     # graphic stuff
@@ -92,19 +104,4 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
         print_board(board, empty)
     # --------------------------------------------------------------------------------------------------------------
 
-    if agent_win:
-        return states_reached, 1
-    elif is_a_draw:
-        return states_reached, 0
-    else:
-        return states_reached, -1
-
-
-def update_value_function(value_function, states_reached, result):
-    reward = result
-    for state in states_reached:
-        value_of_state = value_function.get(np.ndenumerate(state), None)
-        if value_of_state is None:
-            value_function[np.ndenumerate(state)] = reward
-        else:
-            value_function[np.ndenumerate(state)] = value_function[np.ndenumerate(state)] + reward
+    return SA_intermediate_state, r, S_prime

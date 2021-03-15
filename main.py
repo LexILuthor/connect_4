@@ -15,17 +15,10 @@ def testingmyfunction():
          ], dtype=np.int8)
 
     training_steps = 10000
-    value_function = {}
-
+    Q = {}
 
     for i in range(training_steps):
-        print(i)
-        states_reached, result = myFun.play_a_game(value_function)
-        myFun.update_value_function(value_function, states_reached, result)
-
-
-
-
+        SA_intermediate_state, r, S_prime = myFun.play_a_game(Q)
 
 
 if __name__ == '__main__':

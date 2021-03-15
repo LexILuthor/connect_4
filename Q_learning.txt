@@ -6,7 +6,7 @@ in the paper "Playing Atari with Deep Reinforcement Learning". I am following th
 Initialize memory capacity N of D (memory that stores 4-tuples of the kind(s, a, r, s'))
 Initialize epsilon
 Initialize discount rate gamma
-Initialize the NN Q with random wheights THETA
+Initialize the NN Q with random weights THETA
 
 For episode = 1 ... M : 
 		Initialize s = s_0 (initial state)
