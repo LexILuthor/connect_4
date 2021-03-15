@@ -59,8 +59,8 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
         states_reached.append(board)
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
-        if print_stuff:
-            print_board(board, empty)
+        #if print_stuff:
+        #   print_board(board, empty)
         # --------------------------------------------------------------------------------------------------------------
 
         # check if the agent won
@@ -75,7 +75,6 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
 
         # ambient makes a (random) move
         ambient_move_row, ambient_move_column = secFun.ambient_move(board, ambient_color, empty)
-        states_reached.append(board)
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
@@ -86,6 +85,12 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
         if secFun.is_full(board, empty):
             is_a_draw = True
             break
+
+    # --------------------------------------------------------------------------------------------------------------
+    # graphic stuff
+    if print_stuff:
+        print_board(board, empty)
+    # --------------------------------------------------------------------------------------------------------------
 
     if agent_win:
         return states_reached, 1

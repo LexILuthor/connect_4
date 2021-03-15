@@ -1,4 +1,5 @@
 import numpy as np
+import json
 
 import myFunctions as myFun
 
@@ -13,16 +14,18 @@ def testingmyfunction():
          [1, 1, 1, 1, -1, -1]
          ], dtype=np.int8)
 
-    value_function = {}
     training_steps = 10000
+    value_function = {}
+
+
     for i in range(training_steps):
         print(i)
         states_reached, result = myFun.play_a_game(value_function)
         myFun.update_value_function(value_function, states_reached, result)
 
-    for i in range(2):
-        states_reached, result = myFun.play_a_game(value_function, print_stuff=True)
-        myFun.update_value_function(value_function, states_reached, result)
+
+
+
 
 
 if __name__ == '__main__':
