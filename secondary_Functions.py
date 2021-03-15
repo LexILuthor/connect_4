@@ -107,3 +107,93 @@ def get_last_occupied_row_in_column(board, column, empty=0):
     while row > 0 and board[row - 1][column] != empty:
         row = row - 1
     return row
+
+
+def is_full(board, empty=0):
+    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros there are in board[0]
+    if np.count_nonzero(board[0] == empty) == 0:
+        return True
+    return False
+
+
+def is_winning(board, last_move_column, last_move_row=-2, empty=0, red=-1, yellow=1):
+    # note this function expect that last_move_column is a legal value and that row is not empty
+    # if last_move_row=-2 it means we do not know the last_move_row and we have to find it using the function
+    # "get_last_occupied_row_in_column(board, last_move_column, empty)"
+
+    # find the row of the last move
+    if last_move_row == -2:
+        last_move_row = get_last_occupied_row_in_column(board, last_move_column, empty)
+
+    cell_value = board[last_move_row][last_move_column]
+    # first we check if below the last move there are three gettoni of the same color
+    # (we do it only if we are above the third row)
+
+    if last_move_row < len(board) - 3:
+        if board[last_move_row + 1][last_move_column] == cell_value:
+            # if the sum of the following three values is tree then they are all of the same color
+            tmp_sum = sum(board[last_move_row + 1:last_move_row + 4, last_move_column])
+            if abs(tmp_sum) == 3:
+                return True
+
+    # second we check the positive diagonal
+    counter = 0
+    current_row = last_move_row
+    current_column = last_move_column
+    # checking the following items on the diagonal
+    while next_cell_on_the_diagonal(board, current_row, current_column, direction=1)[0] == cell_value:
+        counter = counter + 1
+        waste, current_row, current_column = next_cell_on_the_diagonal(board, current_row, current_column, direction=1)
+
+    # checking the preceding items on the diagonal
+    current_row = last_move_row
+    current_column = last_move_column
+    while prev_cell_on_the_diagonal(board, current_row, current_column, direction=1)[0] == cell_value:
+        counter = counter + 1
+        waste, current_row, current_column = prev_cell_on_the_diagonal(board, current_row, current_column, direction=1)
+    if counter >= 3:
+        return True
+
+    # third we check the negative diagonal
+    counter = 0
+    current_row = last_move_row
+    current_column = last_move_column
+    # checking the following items on the diagonal
+    while next_cell_on_the_diagonal(board, current_row, current_column, direction=-1)[0] == cell_value:
+        counter = counter + 1
+        waste, current_row, current_column = next_cell_on_the_diagonal(board, current_row, current_column, direction=-1)
+
+    # checking the preceding items on the diagonal
+    current_row = last_move_row
+    current_column = last_move_column
+    while prev_cell_on_the_diagonal(board, current_row, current_column, direction=-1)[0] == cell_value:
+        counter = counter + 1
+        waste, current_row, current_column = prev_cell_on_the_diagonal(board, current_row, current_column, direction=-1)
+    if counter >= 3:
+        return True
+
+    # fourth we check on the same row
+    counter = 0
+    current_column = last_move_column - 1
+
+    # check on the left
+    while current_column >= 0:
+        if board[last_move_row][current_column] == cell_value:
+            current_column = current_column - 1
+            counter = counter + 1
+        else:
+            break
+
+    # check on the right
+    current_column = last_move_column + 1
+    while current_column < len(board[0]):
+        if board[last_move_row][current_column] == cell_value:
+            current_column = current_column + 1
+            counter = counter + 1
+        else:
+            break
+
+    if counter >= 3:
+        return True
+
+    return False
