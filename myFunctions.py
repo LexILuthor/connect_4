@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from random import *
 
 import secondary_Functions as secFun
 
@@ -35,22 +36,41 @@ def print_board(board, empty=0, red=-1, yellow=1):
     fig.show()
 
 
-def play_a_game(value_function, number_of_rows=6, number_of_columns=7):
+def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns=7):
     # initialize an empty board
-    board = np.zeros((number_of_rows, number_of_columns))
+    board = np.zeros((number_of_rows, number_of_columns), dtype=np.int8)
 
+    empty = 0
     agent_color = 1
     ambient_color = -1
 
-    # the agent makes his move based on the value function
-    possible_states = secFun.states_that_can_be_reached_from(board, agent_color)
+    agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_value_function(board, agent_color, epsilon,
+                                                                                           value_function, empty)
+    if is_winning(board, agent_move_column, agent_move_row, empty):
+        print("Agent win")
+        return
+    if is_full(board, empty):
+        print("is full, it is a draw")
+        return
+
+    print_board(board, empty)
 
 
-def is_winning(board, last_move_column, empty=0, red=-1, yellow=1):
+def is_full(board, empty=0):
+    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros there are in board[0]
+    if np.count_nonzero(board[0] == empty) == 0:
+        return True
+    return False
+
+
+def is_winning(board, last_move_column, last_move_row=-2, empty=0, red=-1, yellow=1):
     # note this function expect that last_move_column is a legal value and that row is not empty
+    # if last_move_row=-2 it means we do not know the last_move_row and we have to find it using the function
+    # "get_last_occupied_row_in_column(board, last_move_column, empty)"
 
     # find the row of the last move
-    last_move_row = secFun.get_last_row_in_column(board, last_move_column, empty)
+    if last_move_row == -2:
+        last_move_row = secFun.get_last_occupied_row_in_column(board, last_move_column, empty)
 
     cell_value = board[last_move_row][last_move_column]
     # first we check if below the last move there are three gettoni of the same color (we do it only if we are above the third row)
@@ -116,7 +136,7 @@ def is_winning(board, last_move_column, empty=0, red=-1, yellow=1):
 
     # check on the right
     current_column = last_move_column + 1
-    while current_column <= len(board[0]):
+    while current_column < len(board[0]):
         if board[last_move_row][current_column] == cell_value:
             current_column = current_column + 1
             counter = counter + 1
