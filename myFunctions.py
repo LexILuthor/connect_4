@@ -44,14 +44,46 @@ def play_a_game(value_function, epsilon=0.1, number_of_rows=6, number_of_columns
     agent_color = 1
     ambient_color = -1
 
-    agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_value_function(board, agent_color, epsilon,
-                                                                                           value_function, empty)
-    if is_winning(board, agent_move_column, agent_move_row, empty):
-        print("Agent win")
-        return
-    if is_full(board, empty):
-        print("is full, it is a draw")
-        return
+    # states reached during this game
+    states_reached = []
+
+    agent_win = False
+    is_a_draw = False
+    ambient_move_row = None
+    ambient_move_column = None
+
+    while True:
+
+        # agent makes a move
+        agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_value_function(board, agent_color,
+                                                                                               epsilon, value_function,
+                                                                                               empty)
+        states_reached.append(board)
+        print_board(board, empty)
+
+        # check if the agent won
+        if is_winning(board, agent_move_column, agent_move_row, empty):
+            agent_win = True
+            break
+
+        # check if board is full
+        if is_full(board, empty):
+            is_a_draw = True
+            break
+
+        # ambient makes a (random) move
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, ambient_color, empty)
+        states_reached.append(board)
+
+        # check if ambient won
+        if is_winning(board, ambient_move_column, ambient_move_row, empty):
+            agent_win = False
+            break
+
+        # check if board is full
+        if is_full(board, empty):
+            is_a_draw = True
+            break
 
     print_board(board, empty)
 

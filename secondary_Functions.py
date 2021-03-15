@@ -3,9 +3,6 @@ import copy
 from random import *
 
 
-
-
-
 def next_cell_on_the_diagonal(matrix, current_row, current_column, direction):
     if direction == 1:
         # check we are in the boundaries
@@ -48,7 +45,9 @@ def states_that_can_be_reached_from(board, color):
     return possible_states
 
 
-
+def ambient_move(board, ambient_color, empty=0):
+    ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
+    return ambient_move_row, ambient_move_column
 
 
 def agent_move_following_epsilon_value_function(board, agent_color, epsilon, value_function, empty=0,
@@ -96,7 +95,7 @@ def random_move(board, color_of_player, empty=0):
     extraction_index = randint(0, len(extraction_list) - 1)
     column_move = extraction_list[extraction_index]
     row_move = get_last_occupied_row_in_column(board, column_move, empty) - 1
-    board[column_move][row_move] = color_of_player
+    board[row_move][column_move] = color_of_player
     return row_move, column_move
 
 

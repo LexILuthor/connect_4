@@ -13,7 +13,6 @@ def testingmyfunction():
          [1, 1, 1, 1, -1, -1]
          ], dtype=np.int8)
 
-    myFun.print_board(board)
 
     value_function = {}
     myFun.play_a_game(value_function)
