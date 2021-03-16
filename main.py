@@ -28,7 +28,7 @@ def testingmyfunction():
         if len(D) >= memory_size:       # Check if the memory is already full
             D.pop(0)                    # we remove the first element
 
-        D.append(new_experience)        # and then we add the         
+        D.append(new_experience)        # and then we add the new experience    
         
 
 
