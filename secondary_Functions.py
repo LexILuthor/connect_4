@@ -211,6 +211,7 @@ def is_winning(board, last_move_column, last_move_row=-2, empty=0, red=-1, yello
 
 def plot_performances(total_games_played, probability_of_success):
     fig, ax = plt.subplots()
+    ax.set_ylim(([0, 1]))
     ax.plot(total_games_played, probability_of_success)
     ax.set_xlabel("games played")
     ax.set_ylabel("probability of success")

@@ -145,7 +145,7 @@ def print_board(board, empty=0, red=-1):
     fig.show()
 
 
-# a function where the NN is first trained with epsilon an dthe evalated with epsilo=0
+# a function where the NN is first trained with epsilon_greedy and then evaluated with epsilon = 0
 def evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon):
     Q = nn.initialize_NN(n_rows, n_columns)
     probability_of_success = [0.5]
