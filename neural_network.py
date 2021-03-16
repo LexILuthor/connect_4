@@ -13,8 +13,8 @@ from tensorflow.keras import layers, models, losses
 # To Do List
 
 # a function that returns our initialized neural network
-def create_the_NN():
-    pass
+def initialize_the_NN():
+    return {}
 
 
 # a function that given training set (we still have to discuss on the type of the training set in input), computes

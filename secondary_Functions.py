@@ -3,6 +3,13 @@ import copy
 from random import *
 
 
+def remove_one_experience(SA_intermediate_state, r, S_prime):
+    slot_to_be_removed = randint(0, len(r) - 1)
+    SA_intermediate_state.pop(slot_to_be_removed)
+    r.pop(slot_to_be_removed)
+    S_prime.pop(slot_to_be_removed)
+
+
 def next_cell_on_the_diagonal(matrix, current_row, current_column, direction):
     if direction == 1:
         # check we are in the boundaries
