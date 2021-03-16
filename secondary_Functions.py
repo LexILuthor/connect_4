@@ -1,6 +1,7 @@
 import numpy as np
 import copy
 from random import *
+import matplotlib.pyplot as plt
 
 import neural_network as nn
 
@@ -84,6 +85,7 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, defa
             # (this is how it works in C++)
             elif value_of_state == max_value:
                 possible_choices.append(state)
+
         chosen_state = possible_choices[randint(0, len(possible_choices) - 1)]
         difference_matrix = board - chosen_state
         agent_move_row, agent_move_column = np.nonzero(difference_matrix)
@@ -205,3 +207,11 @@ def is_winning(board, last_move_column, last_move_row=-2, empty=0, red=-1, yello
         return True
 
     return False
+
+
+def plot_performances(total_games_played, probability_of_success):
+    fig, ax = plt.subplots()
+    ax.plot(total_games_played, probability_of_success)
+    ax.set_xlabel("games played")
+    ax.set_ylabel("probability of success")
+    fig.show()

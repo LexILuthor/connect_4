@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 import secondary_Functions as secFun
+import neural_network as nn
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -11,14 +12,18 @@ import secondary_Functions as secFun
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns):
+def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
     SA_intermediate_state = []
     r = []
     S_prime = []
-
+    wins = 0
     for i in range(number_of_games):
-        SA_intermediate_state_tmp, r_tmp, S_prime_tmp = play_a_game(Q, SA_intermediate_state, r, S_prime, n_rows,
-                                                                    n_columns)
+        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won = play_a_game(Q, SA_intermediate_state, r, S_prime,
+                                                                               n_rows, n_columns, epsilon,
+                                                                               print_stuff=False)
+
+        if agent_won:
+            wins = wins + 1
 
         while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
@@ -29,7 +34,7 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns):
         r.extend(r_tmp)
         S_prime.extend(S_prime_tmp)
 
-    return Q
+    return wins
 
 
 def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
@@ -43,6 +48,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
     empty = 0
     agent_color = 1
     ambient_color = -1
+    agent_won = False
 
     while True:
 
@@ -61,6 +67,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
             # Since we are in a terminal state S_prime is not important
             S_prime.append(board)
             r.append(rewards_Wi_Lo_Dr_De[0])
+            agent_won = True
             break
 
         # check if board is full
@@ -103,7 +110,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         print_board(board, empty)
     # ------------------------------------------------------------------------------------------------------------------
 
-    return SA_intermediate_state, r, S_prime
+    return SA_intermediate_state, r, S_prime, agent_won
 
 
 def print_board(board, empty=0, red=-1):
@@ -136,3 +143,19 @@ def print_board(board, empty=0, red=-1):
     ax.scatter(red_x, red_y, color='red', marker=shape_of_points, linewidths=point_dimension)
     ax.scatter(yellow_x, yellow_y, color='yellow', marker=shape_of_points, linewidths=point_dimension)
     fig.show()
+
+
+# a function where the NN is first trained with epsilon an dthe evalated with epsilo=0
+def evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon):
+    Q = nn.initialize_NN(n_rows, n_columns)
+    probability_of_success = [0.5]
+    total_games_played = [0]
+    for i in range(number_of_evaluations):
+        wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
+
+        wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon=0)
+
+        probability_of_success.append(wins / number_of_games)
+        total_games_played.append(total_games_played[-1] + (2 * number_of_games))
+
+    secFun.plot_performances(total_games_played, probability_of_success)
