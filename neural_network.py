@@ -3,24 +3,25 @@
 # I am currently in the process of making it useful for connect 4
 # !!! THIS IS WORK IN PROGRESS !!!
 import numpy as np
-<<<<<<< HEAD
 import tensorflow as tf 
 from tensorflow.keras import layers,  losses
-
-# !!! WARNING !!! The number of actions need to be loaded and this will be loaded
-num_actions = 10
-=======
-import tensorflow as tf
-from tensorflow.keras import layers, models, losses
->>>>>>> 73046dc6386815252c4f0c784f2c47a6e863b3ff
 
 
 ###########################
 # To Do List
 
 # a function that returns our initialized neural network
-def initialize_the_NN():
-    return {}
+def create_NN(n_rows, n_columns):
+	Q = tf.keras.Sequential([
+		layers.Conv2D(10, (3,3), activation = 'relu', input_shape = (n_rows, n_columns, 1)),
+		layers.Dropout(0.1),						# This is for regularization
+		layers.Flatten(),
+		layers.Dense(20, activation = 'relu'),		# This can be changed later
+		layers.Dropout(0.2),
+		layers.Dense(n_columns)						# The number of actions is equal to the number of columns
+		])
+
+	return Q
 
 
 # a function that given training set (we still have to discuss on the type of the training set in input), computes
@@ -57,7 +58,7 @@ model = tf.keras.Sequential([
   # the following layer serves to prevent overfitting by dropping out neurons randomly during training
   layers.Dropout(0.2),  
   # the last output layer is also dense 
-  layers.Dense(num_actions)  			# -------------------------- !!! WARNING !!!  Instead of 10 we will use the number of actions
+  layers.Dense(10)  			# -------------------------- !!! WARNING !!!  Instead of 10 we will use the number of actions
 ])
 
 # !!! WARNING !!!     WE HAVE TO CHANGE LOSS FUNCTION

@@ -15,9 +15,6 @@ def main():
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    # a function that "plays number_of_games" times and train the neural network while playing
-    # we will substitute Q with our neural network
-
     my_neural_network_Q = myFun.play_and_learn(number_of_games, memory_size, Q)
 
 
