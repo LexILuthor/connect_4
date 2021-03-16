@@ -11,8 +11,27 @@ import secondary_Functions as secFun
 
 # ----------------------------------------------------------------------------------------------------------------------
 
+def play_and_learn(number_of_games, memory_size, Q):
+    SA_intermediate_state = []
+    r = []
+    S_prime = []
 
-def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
+    for i in range(number_of_games):
+        SA_intermediate_state_tmp, r_tmp, S_prime_tmp = play_a_game(Q, SA_intermediate_state, r, S_prime)
+
+        while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
+            # remove a (random) element from the tree lists N.
+            secFun.remove_one_experience(SA_intermediate_state, r, S_prime)
+
+        # we put the experience from this last game with the overall experience
+        SA_intermediate_state.extend(SA_intermediate_state_tmp)
+        r.extend(r_tmp)
+        S_prime.extend(S_prime_tmp)
+
+    return Q
+
+
+def play_a_game(Q, SA_intermediate_state, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_columns=7,
                 rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
@@ -24,16 +43,12 @@ def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
     agent_color = 1
     ambient_color = -1
 
-    # we will be able to recognize the terminal states because r will be != 0
-    SA_intermediate_state = []
-    r = []
-    S_prime = []
-
     while True:
 
         # agent makes a move
         agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
         SA_intermediate_state.append(board)
+
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
         if print_stuff:
@@ -71,6 +86,17 @@ def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
         # it was a "nothing happens" action
         S_prime.append(board)
         r.append(rewards_Wi_Lo_Dr_De[3])
+
+        # --------------------------------------------------------------------------------------------------------------
+        # here the turn ends (both the agent and the ambient have done their move)
+
+        # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
+
+        # train_my_NN(Q):
+
+        # --------------------------------------------------------------------------------------------------------------
+
+
 
     # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff
