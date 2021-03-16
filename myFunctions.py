@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 import secondary_Functions as secFun
 import neural_network as nn
@@ -99,6 +100,15 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         # here the turn ends (both the agent and the ambient have done their move)
 
         # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
+
+        # !should i remove the selected states?!
+
+        dimension_of_the_batch = 4
+        my_batch = [random.randrange(len(r)) for i in range(dimension_of_the_batch)]
+
+        selected_SA_intermediate_state = [SA_intermediate_state[i] for i in my_batch]
+        selected_r = [r[i] for i in my_batch]
+        selected_S_prime = [S_prime[i] for i in my_batch]
 
         # train_my_NN(Q):
 
