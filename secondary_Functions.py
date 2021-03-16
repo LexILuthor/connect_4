@@ -2,6 +2,8 @@ import numpy as np
 import copy
 from random import *
 
+import neural_network as nn
+
 
 def remove_one_experience(SA_intermediate_state, r, S_prime):
     slot_to_be_removed = randint(0, len(r) - 1)
@@ -71,9 +73,7 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, defa
         max_value = -np.inf
         possible_choices = []
         for state in possible_states:
-            value_of_state = Q.get(np.ndenumerate(state), None)
-            if value_of_state is None:
-                value_of_state = default_value_of_Q
+            value_of_state = nn.Q_eval(Q, state)
 
             if value_of_state > max_value:
                 del possible_choices[:]

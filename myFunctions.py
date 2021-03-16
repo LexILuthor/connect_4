@@ -11,13 +11,14 @@ import secondary_Functions as secFun
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def play_and_learn(number_of_games, memory_size, Q):
+def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns):
     SA_intermediate_state = []
     r = []
     S_prime = []
 
     for i in range(number_of_games):
-        SA_intermediate_state_tmp, r_tmp, S_prime_tmp = play_a_game(Q, SA_intermediate_state, r, S_prime)
+        SA_intermediate_state_tmp, r_tmp, S_prime_tmp = play_a_game(Q, SA_intermediate_state, r, S_prime, n_rows,
+                                                                    n_columns)
 
         while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
@@ -31,7 +32,7 @@ def play_and_learn(number_of_games, memory_size, Q):
     return Q
 
 
-def play_a_game(Q, SA_intermediate_state, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_columns=7,
+def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
                 rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
@@ -95,8 +96,6 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, epsilon=0.1, number_of_row
         # train_my_NN(Q):
 
         # --------------------------------------------------------------------------------------------------------------
-
-
 
     # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff
