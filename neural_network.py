@@ -31,8 +31,9 @@ def Q_eval(Q, current_state):
 # To Do List
 
 
-# a function that given training set (we still have to discuss on the type of the training set in input), computes
-# the target value, and then trains the neural network using the training set
-def train_my_NN():
+# a function that given a batch of training set coming from memory D, computes
+# the target value, and then trains the neural network 
+def train_my_NN(experience_batch, Q):
+
     pass
 

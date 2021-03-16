@@ -13,9 +13,9 @@ For episode = 1 ... M :
 		While (s not terminal state):
 				choose action a with epsilon-greedy policy w.r.t. current Q 
 				execute a and observe reward r and next state s'
-				store (s,a,r,s') in D
+				store (s,a ,r,s') in D
 				s = s'
-				sample a random batch of 4-tuples (s_j, a_j, r_j, s_j') from D 
+				sample a random batch of 4-tuples (s_j,a_j, r_j, s_j') from D 
 				set targets y_j as follows
 
 				if (s_j' is terminal state):
