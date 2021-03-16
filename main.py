@@ -21,6 +21,8 @@ def testingmyfunction():
     memory_size = 100       # Let's set the memory capacity
     D = []                  # Initialize the memory (as a list)
 
+    # Memory of the agent------------------------------------
+
     for i in range(training_steps):
         SA_intermediate_state, r, S_prime = myFun.play_a_game(Q)
         new_experience = [SA_intermediate_state, r, S_prime]        # This is the new experience to be added in the memory D
@@ -28,7 +30,7 @@ def testingmyfunction():
         if len(D) >= memory_size:       # Check if the memory is already full
             D.pop(0)                    # we remove the first element
 
-        D.append(new_experience)        # and then we add the new experience    
+        D.append(new_experience)        # and then we add the         
         
 
 

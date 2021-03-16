@@ -4,15 +4,14 @@ import matplotlib.pyplot as plt
 import secondary_Functions as secFun
 
 
-
-
-
-#----------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 #   TO DO:
 #
 #   
 
-#----------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
+
+
 def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
                 rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
@@ -24,8 +23,6 @@ def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
     empty = 0
     agent_color = 1
     ambient_color = -1
-
-    # states reached during this game
 
     # we will be able to recognize the terminal states because r will be != 0
     SA_intermediate_state = []
@@ -75,14 +72,13 @@ def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
         S_prime.append(board)
         r.append(rewards_Wi_Lo_Dr_De[3])
 
-    # --------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff
     if print_stuff:
         print_board(board, empty)
-    # --------------------------------------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------------------------------------------
 
     return SA_intermediate_state, r, S_prime
-
 
 
 def print_board(board, empty=0, red=-1):
