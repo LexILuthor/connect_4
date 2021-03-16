@@ -36,13 +36,19 @@ def print_board(board, empty=0, red=-1):
     fig.show()
 
 
+#----------------------------------------------------------------------------------------------------------
+#   TO DO:
+#
+#   
+
+#----------------------------------------------------------------------------------------------------------
 def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
                 rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
     # initialize an empty board
-    board = np.zeros((number_of_rows, number_of_columns), dtype=np.int8)
+    board = np.zeros([number_of_rows, number_of_columns]).astype(int)
 
     empty = 0
     agent_color = 1
@@ -50,7 +56,7 @@ def play_a_game(Q, epsilon=0.1, number_of_rows=6, number_of_columns=7,
 
     # states reached during this game
 
-    # we will be able t recognize the terminal states because r will be != 0
+    # we will be able to recognize the terminal states because r will be != 0
     SA_intermediate_state = []
     r = []
     S_prime = []
