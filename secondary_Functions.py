@@ -4,6 +4,7 @@ from random import *
 import matplotlib.pyplot as plt
 
 import neural_network as nn
+import myFunctions as myFun
 
 
 def remove_one_experience(SA_intermediate_state, r, S_prime):
@@ -225,7 +226,8 @@ def compute_target_y(Q, SA, r, S_prime, agent_color=1, gamma=1):
         if len(possible_interstate_from_S_prime) == 0:
             print(
                 "----------------------------------------------------------------------------------------------------")
-            y_target_state = r
+            myFun.print_board(S_prime)
+            y_target_state = -0.5
         else:
             Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
             y_target_state = r + gamma * max(Q_of_possible_states)

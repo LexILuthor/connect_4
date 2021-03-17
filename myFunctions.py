@@ -40,7 +40,7 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
 
 
 def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
-                rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
+                rewards_Wi_Lo_Dr_De=(1.0, -1.0, -0.5, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
@@ -68,14 +68,14 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         if secFun.is_winning(board, agent_move_column, agent_move_row, empty):
             # Since we are in a terminal state S_prime is not important
             S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
             agent_won = True
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
             S_prime.append(board)
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             break
 
         # ambient makes a (random) move
@@ -84,19 +84,18 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
             S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
             S_prime.append(board)
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             break
 
         # it was a "nothing happens" action
         S_prime.append(np.matrix.copy(board))
         r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
-
         # here the turn ends (both the agent and the ambient have done their move)
 
     # ------------------------------------------------------------------------------------------------------------------
