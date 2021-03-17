@@ -97,6 +97,7 @@ def play_a_game(Q, S, a, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_co
         # --------------------------------------------------------------------------------------------------------------
         # here the turn ends (both the agent and the ambient have done their move)
 
+
         # sample a batch of 4 from (S, a, r, S_prime)
 
         # !should i remove the selected states?!
