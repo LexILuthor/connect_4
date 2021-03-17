@@ -29,7 +29,7 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
 
         while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
-            secFun.remove_one_experience(SA_intermediate_state, r, S_prime)
+            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=False)
 
         # we put the experience from this last game with the overall experience
         SA_intermediate_state.extend(SA_intermediate_state_tmp)
@@ -97,12 +97,11 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         S_prime.append(np.matrix.copy(board))
         r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
         # here the turn ends (both the agent and the ambient have done their move)
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
-    batch_size = 60
-    secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
-    # ------------------------------------------------------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------------
+        # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
+        batch_size = 4
+        secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
+        # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff

@@ -7,8 +7,12 @@ import neural_network as nn
 import myFunctions as myFun
 
 
-def remove_one_experience(SA_intermediate_state, r, S_prime):
-    slot_to_be_removed = randint(0, len(r) - 1)
+def remove_one_experience(SA_intermediate_state, r, S_prime, random=False):
+    if random:
+        slot_to_be_removed = randint(0, len(r) - 1)
+    else:
+        slot_to_be_removed = 0
+
     SA_intermediate_state.pop(slot_to_be_removed)
     r.pop(slot_to_be_removed)
     S_prime.pop(slot_to_be_removed)
