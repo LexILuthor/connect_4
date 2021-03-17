@@ -3,22 +3,29 @@
 # I am currently in the process of making it useful for connect 4
 # !!! THIS IS WORK IN PROGRESS !!!
 import numpy as np
+<<<<<<< HEAD
 import tensorflow as tf 
 from tensorflow.keras import layers,  losses
 import tensorflow.keras.backend as kb
+=======
+import tensorflow as tf
+from tensorflow.keras import layers, losses
+
+>>>>>>> ba166970f7d687a89ec9442e7bf8112d2e17cb9e
 
 # a function that returns our initialized neural network
 def create_NN(n_rows, n_columns):
-	Q = tf.keras.Sequential([
-		layers.Conv2D(10, (3,3), activation = 'relu', input_shape = (n_rows, n_columns, 1)),
-		layers.Dropout(0.1),						# This is for regularization
-		layers.Flatten(),
-		layers.Dense(20, activation = 'relu'),		# This can be changed later
-		layers.Dropout(0.2),
-		layers.Dense(n_columns)						# The number of actions is equal to the number of columns
-		])
+    Q = tf.keras.Sequential([
+        layers.Conv2D(10, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Dropout(0.1),  # This is for regularization
+        layers.Flatten(),
+        layers.Dense(20, activation='relu'),  # This can be changed later
+        layers.Dropout(0.2),
+        layers.Dense(n_columns)  # The number of actions is equal to the number of columns
+    ])
 
-	return Q
+    return Q
+
 
 # Q_eval is a function that given our neural network Q and the current state s returns the values of all actions
 def Q_eval(Q, current_state):
@@ -33,6 +40,7 @@ def Q_eval(Q, current_state):
 # To Do List
 
 
+<<<<<<< HEAD
 # a function that given a batch of training set coming from memory D, and the discount rate gamma
 # computes the target value, and then trains the neural network 
 # !!! WARNING !!!
@@ -80,3 +88,9 @@ def train_my_NN(experience_batch, Q, gamma):
 		
     
 
+=======
+# a function that given training set (we still have to discuss on the type of the training set in input), computes
+# the target value, and then trains the neural network using the training set
+def train_my_NN():
+    pass
+>>>>>>> ba166970f7d687a89ec9442e7bf8112d2e17cb9e
