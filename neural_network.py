@@ -30,7 +30,9 @@ def initialize_NN(n_rows, n_columns):
 def Q_eval(Q, current_state):
     # we need to reshape the state into a tensor
     (n_rows, n_columns) = np.shape(current_state)
-    return Q.predict(np.reshape(current_state, (1, n_rows, n_columns, 1)))
+    result = Q(np.reshape(current_state, (1, n_rows, n_columns, 1)))
+    result = result[0][0].numpy()
+    return result
 
 
 ###########################
@@ -41,10 +43,8 @@ def Q_eval(Q, current_state):
 # the target value, and then trains the neural network using the training set
 def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
     gamma = 1
-    print("start")
     y_target_state = [secFun.compute_target_y(Q, SA_intermediate_state[i], r[i], S_prime[i], agent_color, gamma) for i
                       in range(len(r))]
-    print("end")
     y_target_state = np.array(y_target_state)
     SA_intermediate_state = np.array(SA_intermediate_state)
     n_rows, n_columns = np.shape(SA_intermediate_state[0])

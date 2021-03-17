@@ -97,25 +97,13 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         S_prime.append(np.matrix.copy(board))
         r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
 
-        # --------------------------------------------------------------------------------------------------------------
         # here the turn ends (both the agent and the ambient have done their move)
 
     # ------------------------------------------------------------------------------------------------------------------
-
     # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
-
-    # !should i remove the selected states?!
-
-    dimension_of_the_batch = 60
-    my_batch = [random.randrange(len(r)) for _ in range(dimension_of_the_batch)]
-
-    selected_SA_intermediate_state = [SA_intermediate_state[i] for i in my_batch]
-    selected_r = [r[i] for i in my_batch]
-    selected_S_prime = [S_prime[i] for i in my_batch]
-
-    nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime, agent_color)
-
-    # --------------------------------------------------------------------------------------------------------------
+    batch_size = 60
+    secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
+    # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff

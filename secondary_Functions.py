@@ -222,6 +222,21 @@ def compute_target_y(Q, SA, r, S_prime, agent_color=1, gamma=1):
         y_target_state = r
     else:
         possible_interstate_from_S_prime = states_that_can_be_reached_from(S_prime, agent_color)
-        Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
-        y_target_state = r + gamma * max(Q_of_possible_states)
+        if len(possible_interstate_from_S_prime) == 0:
+            print(
+                "----------------------------------------------------------------------------------------------------")
+            y_target_state = r
+        else:
+            Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
+            y_target_state = r + gamma * max(Q_of_possible_states)
     return y_target_state
+
+
+def select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color=1):
+    my_batch = [randrange(len(r)) for _ in range(batch_size)]
+
+    selected_SA_intermediate_state = [SA_intermediate_state[i] for i in my_batch]
+    selected_r = [r[i] for i in my_batch]
+    selected_S_prime = [S_prime[i] for i in my_batch]
+
+    nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime, agent_color)
