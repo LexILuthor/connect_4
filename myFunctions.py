@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
+import copy
 
 import secondary_Functions as secFun
 
@@ -49,11 +50,11 @@ def play_a_game(Q, S, a, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_co
     while True:
 
         # agent makes a move
-        S.append(board)
+        S.append(np.matrix.copy(board))
 
         agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
 
-        a.append(agent_move_column)
+        a.append(copy.copy(agent_move_column))
 
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
@@ -64,14 +65,14 @@ def play_a_game(Q, S, a, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_co
         # check if the agent won
         if secFun.is_winning(board, agent_move_column, agent_move_row, empty):
             # Since we are in a terminal state S_prime is not important
-            S_prime.append(board)
-            r.append(rewards_Wi_Lo_Dr_De[0])
+            S_prime.append(np.matrix.copy(board))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[0]))
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
-            S_prime.append(board)
-            r.append(rewards_Wi_Lo_Dr_De[2])
+            S_prime.append(np.matrix.copy(board))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             break
 
         # ambient makes a (random) move
@@ -79,19 +80,19 @@ def play_a_game(Q, S, a, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_co
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
-            S_prime.append(board)
-            r.append(rewards_Wi_Lo_Dr_De[1])
+            S_prime.append(np.matrix.copy(board))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
-            S_prime.append(board)
-            r.append(rewards_Wi_Lo_Dr_De[2])
+            S_prime.append(np.matrix.copy(board))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             break
 
         # it was a "nothing happens" action
-        S_prime.append(board)
-        r.append(rewards_Wi_Lo_Dr_De[3])
+        S_prime.append(np.matrix.copy(board))
+        r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
 
         # --------------------------------------------------------------------------------------------------------------
         # here the turn ends (both the agent and the ambient have done their move)
