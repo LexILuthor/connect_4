@@ -10,8 +10,7 @@ def main():
     n_columns = 6
     epsilon = 0.1
     Q = nn.initialize_NN(n_rows, n_columns)
-    probability_of_success = [0.5]
-    total_games_played = [0]
+    # Q = nn.load_NN(n_rows, n_columns)
 
     # Memory of the agent ----------------------------------------------------------------------------------------------
     memory_size = 1000  # Let's set the memory capacity
@@ -22,6 +21,8 @@ def main():
 
     number_of_evaluations = 10
     myFun.evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
+
+    nn.save_NN(Q)
 
 
 if __name__ == '__main__':

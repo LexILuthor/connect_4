@@ -60,3 +60,16 @@ def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
 
     y_target_state = np.array(y_target_state)
     Q.fit(x=SA_intermediate_state, y=y_target_state, batch_size=256, epochs=5)
+
+
+def save_NN(model):
+    # save a model
+    model.save('NN_parameters/Q.h5')  # creates a HDF5 file 'my_model.h5'
+    model.save_weights('NN_parameters/Q_weights.h5')
+
+
+def load_NN(n_rows, n_columns):
+    # load a model
+    model = initialize_NN(n_rows, n_columns)
+    model.load_weights('4_epoch_weights.h5')
+    return model
