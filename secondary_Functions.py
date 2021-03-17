@@ -60,8 +60,7 @@ def ambient_move(board, ambient_color, empty=0):
     return ambient_move_row, ambient_move_column
 
 
-def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, default_value_of_Q=0):
-    # if the state we are considering has no vale we set it to default_value_of_Q
+def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
 
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:

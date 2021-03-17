@@ -1,5 +1,4 @@
 import numpy as np
-
 import myFunctions as myFun
 import neural_network as nn
 
@@ -9,8 +8,9 @@ def main():
     n_rows = 7
     n_columns = 6
     epsilon = 0.1
-    Q = nn.initialize_NN(n_rows, n_columns)
-    # Q = nn.load_NN(n_rows, n_columns)
+
+    # Q = nn.initialize_NN(n_rows, n_columns)
+    Q = nn.load_NN(n_rows, n_columns)
 
     # Memory of the agent ----------------------------------------------------------------------------------------------
     memory_size = 1000  # Let's set the memory capacity
@@ -19,7 +19,7 @@ def main():
 
     wins = myFun.play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-    number_of_evaluations = 10
+    number_of_evaluations = 20
     myFun.evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
 
     nn.save_NN(Q)
