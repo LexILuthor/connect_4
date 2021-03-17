@@ -71,5 +71,5 @@ def save_NN(model):
 def load_NN(n_rows, n_columns):
     # load a model
     model = initialize_NN(n_rows, n_columns)
-    model.load_weights('4_epoch_weights.h5')
+    model.load_weights('NN_parameters/Q_weights.h5')
     return model
