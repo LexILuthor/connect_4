@@ -6,6 +6,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, losses
 
+import secondary_Functions as secFun
+
 
 # a function that returns our initialized neural network
 def initialize_NN(n_rows, n_columns):
@@ -17,7 +19,9 @@ def initialize_NN(n_rows, n_columns):
         layers.Dropout(0.2),
         layers.Dense(1)
     ])
-
+    Q.compile(optimizer='adam',
+              loss=tf.keras.losses.MeanSquaredError(),
+              metrics=['accuracy'])
     return Q
 
 
@@ -35,8 +39,24 @@ def Q_eval(Q, current_interstate_state):
 
 # a function that given training set (we still have to discuss on the type of the training set in input), computes
 # the target value, and then trains the neural network using the training set
-def train_my_NN(Q, SA_intermediate_state, r, S_prime):
+def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
+    theta = 1
+    gamma = 1
+
+    y_target_state = [None] * len(SA_intermediate_state)
+    for i in range(len(SA_intermediate_state)):
+        # if SA[i] is a terminal state
+        if r[i] != 0:
+            y_target_state[i] = r[i]
+        else:
+            possible_interstate_from_S_prime = secFun.states_that_can_be_reached_from(S_prime[i], agent_color)
+            Q_of_possible_states = [Q_eval(Q, state) for state in possible_interstate_from_S_prime]
+
+            y_target_state[i] = r[i] + gamma * max(Q_of_possible_states)
 
     SA_intermediate_state = np.array(SA_intermediate_state)
     n_rows, n_columns = np.shape(SA_intermediate_state[0])
     SA_intermediate_state = SA_intermediate_state.reshape(SA_intermediate_state.shape[0], n_rows, n_columns, 1)
+
+    y_target_state = np.array(y_target_state)
+    Q.fit(x=SA_intermediate_state, y=y_target_state, batch_size=256, epochs=5)

@@ -20,8 +20,8 @@ def main():
 
     wins = myFun.play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-    # number_of_evaluations = 10
-    # myFun.evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
+    number_of_evaluations = 10
+    myFun.evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
 
 
 if __name__ == '__main__':

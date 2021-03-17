@@ -111,7 +111,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         selected_r = [r[i] for i in my_batch]
         selected_S_prime = [S_prime[i] for i in my_batch]
 
-        nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime)
+        nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime, agent_color)
 
         # --------------------------------------------------------------------------------------------------------------
 
