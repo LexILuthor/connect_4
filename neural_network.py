@@ -35,5 +35,8 @@ def Q_eval(Q, current_interstate_state):
 
 # a function that given training set (we still have to discuss on the type of the training set in input), computes
 # the target value, and then trains the neural network using the training set
-def train_my_NN():
-    pass
+def train_my_NN(Q, SA_intermediate_state, r, S_prime):
+
+    SA_intermediate_state = np.array(SA_intermediate_state)
+    n_rows, n_columns = np.shape(SA_intermediate_state[0])
+    SA_intermediate_state = SA_intermediate_state.reshape(SA_intermediate_state.shape[0], n_rows, n_columns, 1)
