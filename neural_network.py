@@ -50,7 +50,7 @@ def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
             y_target_state[i] = r[i]
         else:
             possible_interstate_from_S_prime = secFun.states_that_can_be_reached_from(S_prime[i], agent_color)
-            Q_of_possible_states = [Q_eval(Q, state) for state in possible_interstate_from_S_prime]
+            Q_of_possible_states = [Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
 
             y_target_state[i] = r[i] + gamma * max(Q_of_possible_states)
 
@@ -59,7 +59,7 @@ def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
     SA_intermediate_state = SA_intermediate_state.reshape(SA_intermediate_state.shape[0], n_rows, n_columns, 1)
 
     y_target_state = np.array(y_target_state)
-    Q.fit(x=SA_intermediate_state, y=y_target_state, batch_size=256, epochs=5)
+    Q.fit(x=SA_intermediate_state, y=y_target_state)
 
 
 def save_NN(model):

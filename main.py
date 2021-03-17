@@ -17,10 +17,10 @@ def main():
 
     # ------------------------------------------------------------------------------------------------------------------
 
-    wins = myFun.play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
+    # wins = myFun.play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
     number_of_evaluations = 20
-    myFun.evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
+    myFun.evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
 
     nn.save_NN(Q)
 

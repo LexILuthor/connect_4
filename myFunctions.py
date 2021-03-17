@@ -157,11 +157,11 @@ def print_board(board, empty=0, red=-1):
 
 
 # a function where the NN is first trained with epsilon_greedy and then evaluated with epsilon = 0
-def evaluate_performance(number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon):
-    Q = nn.initialize_NN(n_rows, n_columns)
+def evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon):
     probability_of_success = [0.5]
     total_games_played = [0]
     for i in range(number_of_evaluations):
+        print("evaluation number " + str(i))
         wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
         wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon=0)
