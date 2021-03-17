@@ -4,7 +4,7 @@ import neural_network as nn
 
 
 def main():
-    number_of_games = 5
+    number_of_games = 10
     n_rows = 7
     n_columns = 6
     epsilon = 0.1
@@ -19,7 +19,7 @@ def main():
 
     # wins = myFun.play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-    number_of_evaluations = 20
+    number_of_evaluations = 3
     myFun.evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon)
 
     nn.save_NN(Q)

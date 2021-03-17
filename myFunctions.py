@@ -100,20 +100,22 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         # --------------------------------------------------------------------------------------------------------------
         # here the turn ends (both the agent and the ambient have done their move)
 
-        # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
+    # ------------------------------------------------------------------------------------------------------------------
 
-        # !should i remove the selected states?!
+    # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
 
-        dimension_of_the_batch = 20
-        my_batch = [random.randrange(len(r)) for _ in range(dimension_of_the_batch)]
+    # !should i remove the selected states?!
 
-        selected_SA_intermediate_state = [SA_intermediate_state[i] for i in my_batch]
-        selected_r = [r[i] for i in my_batch]
-        selected_S_prime = [S_prime[i] for i in my_batch]
+    dimension_of_the_batch = 60
+    my_batch = [random.randrange(len(r)) for _ in range(dimension_of_the_batch)]
 
-        nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime, agent_color)
+    selected_SA_intermediate_state = [SA_intermediate_state[i] for i in my_batch]
+    selected_r = [r[i] for i in my_batch]
+    selected_S_prime = [S_prime[i] for i in my_batch]
 
-        # --------------------------------------------------------------------------------------------------------------
+    nn.train_my_NN(Q, selected_SA_intermediate_state, selected_r, selected_S_prime, agent_color)
+
+    # --------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------
     # graphic stuff

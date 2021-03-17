@@ -61,7 +61,6 @@ def ambient_move(board, ambient_color, empty=0):
 
 
 def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
-
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
         # the agent play randomly
@@ -215,3 +214,14 @@ def plot_performances(total_games_played, probability_of_success):
     ax.set_xlabel("games played")
     ax.set_ylabel("probability of success")
     fig.show()
+
+
+def compute_target_y(Q, SA, r, S_prime, agent_color=1, gamma=1):
+    # if SA[i] is a terminal state
+    if r != 0:
+        y_target_state = r
+    else:
+        possible_interstate_from_S_prime = states_that_can_be_reached_from(S_prime, agent_color)
+        Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
+        y_target_state = r + gamma * max(Q_of_possible_states)
+    return y_target_state
