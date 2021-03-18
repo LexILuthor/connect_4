@@ -45,6 +45,7 @@ def prev_cell_on_the_diagonal(matrix, current_row, current_column, direction):
             return matrix[current_row + 1][current_column + 1], current_row + 1, current_column + 1
 
 
+#---------------------------------------------------------------------------------------------------
 def states_that_can_be_reached_from(board, color):
     possible_states = []
     for i in range(len(board[0])):
@@ -54,41 +55,56 @@ def states_that_can_be_reached_from(board, color):
             possible_states[-1][row - 1][i] = color
     return possible_states
 
-
+#---------------------------------------------------------------------------------------------------
+# This the implementation of a random environment
 def ambient_move(board, ambient_color, empty=0):
     ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
     return ambient_move_row, ambient_move_column
 
-
-def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, default_value_of_Q=0):
-    # if the state we are considering has no vale we set it to default_value_of_Q
-
+#---------------------------------------------------------------------------------------------------
+# Function that makes the agent play according to the epsilon-greedy strategy
+# Takes in input the current state (board), the agent color (=1), the epsilon parameter,
+# the NN Q and the color of empty "pixels" (=0)
+def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
+        print("I am debugging")
         # the agent play randomly
         agent_move_row, agent_move_column = random_move(board, agent_color, empty)
         return agent_move_row, agent_move_column
     else:
         # the agent makes his move based on the value function
-        agent_move_column = nn.Q_eval(Q, board)
+        available_actions = []
+        for i in range(len(board[0])):
+        # check whether the upper slot is empty
+            if board[0][i] == empty:
+                available_actions.append(int(i))
+        # let's invoke the NN
+        action_values = nn.Q_eval(Q, board)
+        # we choose the max among the available ones
+        agent_move_column = np.argmax(action_values[available_actions])
         agent_move_row = get_last_occupied_row_in_column(board, agent_move_column, empty) - 1
-        board[agent_move_row][agent_move_column] = agent_color
         return agent_move_row, agent_move_column
 
-
+#--------------------------------------------------------------------------------------------------------
 def random_move(board, color_of_player, empty=0):
     # expect a non full board as input
     extraction_list = []
+    # collect the indexes of the columns wich are not full
     for i in range(len(board[0])):
+        # check whether the upper slot is empty
         if board[0][i] == empty:
             extraction_list.append(int(i))
+    # random extract from the available columns
     extraction_index = randint(0, len(extraction_list) - 1)
     column_move = extraction_list[extraction_index]
     row_move = get_last_occupied_row_in_column(board, column_move, empty) - 1
-    board[row_move][column_move] = color_of_player
     return row_move, column_move
 
 
+
+
+#----------------------------------------------------------------------------------------------------------
 def get_last_occupied_row_in_column(board, column, empty=0):
     # !!Warning: it returns len(board) if the column is empty !!
     # !!Warning len(board) is out of bound!!
@@ -98,7 +114,7 @@ def get_last_occupied_row_in_column(board, column, empty=0):
         row = row - 1
     return row
 
-
+#---------------------------------------------------------------------------------------------------------
 def is_full(board, empty=0):
     # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros
     # there are in board[0]
@@ -106,8 +122,8 @@ def is_full(board, empty=0):
         return True
     return False
 
-
-def is_winning(board, last_move_column, last_move_row=-2, empty=0, red=-1, yellow=1):
+#--------------------------------------------------------------------------------------------------------
+def is_winning(board, last_move_row=-2, last_move_column=0, empty=0, red=-1, yellow=1):
     # note this function expect that last_move_column is a legal value and that row is not empty
     # if last_move_row=-2 it means we do not know the last_move_row and we have to find it using the function
     # "get_last_occupied_row_in_column(board, last_move_column, empty)"

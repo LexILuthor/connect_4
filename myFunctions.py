@@ -1,125 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-import copy
 
 import secondary_Functions as secFun
 
-
-# ----------------------------------------------------------------------------------------------------------------------
-#   TO DO:
-#
-#   
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-def play_and_learn(number_of_games, memory_size, Q):
-    S = []
-    a = []
-    r = []
-    S_prime = []
-
-    for i in range(number_of_games):
-        S_tmp, a_tmp, r_tmp, S_prime_tmp = play_a_game(Q, S, a, r, S_prime)
-
-        while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
-            # remove a (random) element from the tree lists N.
-            secFun.remove_one_experience(S, a, r, S_prime)
-
-        # we put the experience from this last game with the overall experience
-        S.extend(S_tmp)
-        a.extend(a_tmp)
-        r.extend(r_tmp)
-        S_prime.extend(S_prime_tmp)
-
-    return Q
-
-
-def play_a_game(Q, S, a, r, S_prime, epsilon=0.1, number_of_rows=6, number_of_columns=7,
-                rewards_Wi_Lo_Dr_De=(1, -1, -0.5, 0), print_stuff=False):
-    # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
-    # draw action, nothing happens action
-
-    # initialize an empty board
-    board = np.zeros([number_of_rows, number_of_columns]).astype(int)
-
-    empty = 0
-    agent_color = 1
-    ambient_color = -1
-
-    while True:
-
-        # agent makes a move
-        S.append(np.matrix.copy(board))
-
-        agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
-
-        a.append(copy.copy(agent_move_column))
-
-        # --------------------------------------------------------------------------------------------------------------
-        # graphic stuff
-        if print_stuff:
-            print_board(board, empty)
-        # --------------------------------------------------------------------------------------------------------------
-
-        # check if the agent won
-        if secFun.is_winning(board, agent_move_column, agent_move_row, empty):
-            # Since we are in a terminal state S_prime is not important
-            S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[0]))
-            break
-
-        # check if board is full
-        if secFun.is_full(board, empty):
-            S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
-            break
-
-        # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, ambient_color, empty)
-
-        # check if ambient won
-        if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
-            S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
-            break
-
-        # check if board is full
-        if secFun.is_full(board, empty):
-            S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
-            break
-
-        # it was a "nothing happens" action
-        S_prime.append(np.matrix.copy(board))
-        r.append(copy.copy(rewards_Wi_Lo_Dr_De[3]))
-
-        # --------------------------------------------------------------------------------------------------------------
-        # here the turn ends (both the agent and the ambient have done their move)
-
-        # sample a batch of 4 from (S, a, r, S_prime)
-
-        # !should i remove the selected states?!
-
-        dimension_of_the_batch = 4
-        my_batch = [random.randrange(len(r)) for i in range(dimension_of_the_batch)]
-
-        selected_S = [S[i] for i in my_batch]
-        selected_a = [a[i] for i in my_batch]
-        selected_r = [r[i] for i in my_batch]
-        selected_S_prime = [S_prime[i] for i in my_batch]
-
-        # train_my_NN(Q):
-
-        # --------------------------------------------------------------------------------------------------------------
-
-    # ------------------------------------------------------------------------------------------------------------------
-    # graphic stuff
-    if print_stuff:
-        print_board(board, empty)
-    # ------------------------------------------------------------------------------------------------------------------
-
-    return S, a, r, S_prime
 
 
 def print_board(board, empty=0, red=-1):
@@ -152,3 +36,61 @@ def print_board(board, empty=0, red=-1):
     ax.scatter(red_x, red_y, color='red', marker=shape_of_points, linewidths=point_dimension)
     ax.scatter(yellow_x, yellow_y, color='yellow', marker=shape_of_points, linewidths=point_dimension)
     fig.show()
+
+
+# ----------------------------------------------------------------------------------------------------------
+
+# Function to make the agent play only one move and returns a 4-tuple (s,a,r,s') of experience
+# If it ends in a terminal state, then S' is set to the empty board. 
+#
+def play_move(Q, S, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
+
+    # agent makes a move
+    agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty)
+    current_state = np.copy(S)
+    # for debugging
+    a = agent_move_column
+    # define the intermidiate state
+    inter_state = np.copy(S)
+    inter_state[agent_move_row, agent_move_column] = agent_color
+    # check if the agent won
+    if secFun.is_winning(inter_state, agent_move_row, agent_move_column, empty):
+        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
+        S_prime = np.zeros(np.shape(S))
+        r = 1
+
+    
+    # check if board is full then it is a draw
+    if secFun.is_full(inter_state, empty):
+        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
+        S_prime = np.zeros(np.shape(S))
+        r = -0.5
+    
+
+    # ambient makes a (random) move
+    ambient_move_row, ambient_move_column = secFun.ambient_move(inter_state, ambient_color, empty)
+    S_prime = np.copy(inter_state)
+    S_prime[ambient_move_row, ambient_move_column] = ambient_color
+
+    # check if ambient won
+    if secFun.is_winning(S_prime, ambient_move_row, ambient_move_column, empty):
+        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
+        S_prime = np.zeros(np.shape(S))
+        r = -1    
+        
+
+    # check if board is full
+    if secFun.is_full(S_prime, empty):
+        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
+        S_prime = np.zeros(np.shape(S))
+        r = -0.5
+      
+
+    # it was a "nothing happens" action
+    else:
+        r = 0
+
+    return current_state, a, r, S_prime
+
+        # --------------------------------------------------------------------------------------------------------------
+        # here the turn ends (both the agent and the ambient have done their move)

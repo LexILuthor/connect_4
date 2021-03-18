@@ -3,15 +3,10 @@
 # I am currently in the process of making it useful for connect 4
 # !!! THIS IS WORK IN PROGRESS !!!
 import numpy as np
-<<<<<<< HEAD
 import tensorflow as tf 
 from tensorflow.keras import layers,  losses
 import tensorflow.keras.backend as kb
-=======
-import tensorflow as tf
-from tensorflow.keras import layers, losses
 
->>>>>>> ba166970f7d687a89ec9442e7bf8112d2e17cb9e
 
 # a function that returns our initialized neural network
 def create_NN(n_rows, n_columns):
@@ -33,21 +28,22 @@ def Q_eval(Q, current_state):
     current_state = np.array(current_state)
     (n_rows, n_columns) = np.shape(current_state)
     current_state = current_state.reshape(1, n_rows, n_columns, 1)
-    return Q.predict(current_state)
+    return Q.predict(current_state)[0]
+    #return np.array(Q(current_state)[0])
 
 
 ###########################
 # To Do List
 
 
-<<<<<<< HEAD
+
 # a function that given a batch of training set coming from memory D, and the discount rate gamma
 # computes the target value, and then trains the neural network 
 # !!! WARNING !!!
-# I expect experience_batch to be a list with N elements and each element is a 4-list
-def train_my_NN(experience_batch, Q, gamma):
+# I expect experience to be a list with N elements and each element is a 4-list
+def train_my_NN(experience, Q, gamma):
 	# lenght of experience batch
-	len_batch = len(experience_batch)
+	len_batch = len(experience)
 
 	# initialize target
 	y = np.zeros(len_batch)
@@ -55,16 +51,16 @@ def train_my_NN(experience_batch, Q, gamma):
 	y_pred = np.zeros(len_batch)
 	for i in range(len_batch):
 		# the first element in each 4-list is the state s
-		s = experience_batch[i][0]
+		s = experience[i][0]
 		# the second element is the action a
-		a = experience_batch[i][1]
+		a = experience[i][1]
 		# let's compute the predicted value of (s,a)
 		y_pred[i] = Q_eval(Q, s)[a]
 
 		# the third element in each 4-list is the reward
-		r = experience_batch[i][2]
+		r = experience[i][2]
 		# the 4th element is the state s'
-		s_prime = experience_batch[i][3]
+		s_prime = experience[i][3]
 		# case when s' is not terminal (!!! WARNING !!! I assume that this happens iff r == 0)
 		if r == 0:
 			Q_val = Q_eval(Q, s_prime)
@@ -83,14 +79,7 @@ def train_my_NN(experience_batch, Q, gamma):
               metrics=['accuracy'])
 
 	# train
-	Q
+	Q.train()
 
 		
-    
-
-=======
-# a function that given training set (we still have to discuss on the type of the training set in input), computes
-# the target value, and then trains the neural network using the training set
-def train_my_NN():
-    pass
->>>>>>> ba166970f7d687a89ec9442e7bf8112d2e17cb9e
+   
