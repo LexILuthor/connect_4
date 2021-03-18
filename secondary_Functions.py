@@ -68,9 +68,9 @@ def ambient_move(board, ambient_color, empty=0):
 def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
-        print("I am debugging")
+        print("DEBUGGING: agent plays randomly")
         # the agent play randomly
-        agent_move_row, agent_move_column = random_move(board, agent_color, empty)
+        agent_move_row, agent_move_column = copy.deepcopy(random_move(board, agent_color, empty))
         return agent_move_row, agent_move_column
     else:
         # the agent makes his move based on the value function
@@ -82,7 +82,11 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
         # let's invoke the NN
         action_values = nn.Q_eval(Q, board)
         # we choose the max among the available ones
-        agent_move_column = np.argmax(action_values[available_actions])
+        # first we need to create a mask before applying argmax
+        m = np.ones(action_values.size, dtype=bool)
+        m[available_actions] = False
+        masked_action_values = np.ma.array(action_values, mask=m)
+        agent_move_column = np.argmax(masked_action_values)
         agent_move_row = get_last_occupied_row_in_column(board, agent_move_column, empty) - 1
         return agent_move_row, agent_move_column
 

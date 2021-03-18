@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import random
-
+import copy 
 import secondary_Functions as secFun
 
 
@@ -164,43 +164,43 @@ def print_board(board, empty=0, red=-1):
 def play_move(Q, S, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
 
     # agent makes a move
-    agent_move_row, agent_move_column = np.copy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty))
-    current_state = np.copy(S)
+    agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty))
+    current_state = copy.deepcopy(S)
     # for debugging
-    a = agent_move_column
+    a = copy.copy(agent_move_column)
     # define the intermidiate state
-    inter_state = np.copy(S)
-    inter_state[agent_move_row, agent_move_column] = agent_color
+    inter_state = copy.deepcopy(S)
+    inter_state[agent_move_row, agent_move_column] = copy.copy(agent_color)
     # check if the agent won
     if secFun.is_winning(inter_state, agent_move_row, agent_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = np.copy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
         r = 1
 
     
     # check if board is full then it is a draw
     if secFun.is_full(inter_state, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = np.copy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
         r = -0.5
     
 
     # ambient makes a (random) move
-    ambient_move_row, ambient_move_column = np.copy(secFun.ambient_move(inter_state, ambient_color, empty))
-    S_prime = np.copy(inter_state)
-    S_prime[ambient_move_row, ambient_move_column] = ambient_color
+    ambient_move_row, ambient_move_column = copy.deepcopy(secFun.ambient_move(inter_state, ambient_color, empty))
+    S_prime = copy.deepcopy(inter_state)
+    S_prime[ambient_move_row, ambient_move_column] = copy.copy(ambient_color)
 
     # check if ambient won
     if secFun.is_winning(S_prime, ambient_move_row, ambient_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = np.copy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
         r = -1    
         
 
     # check if board is full
     if secFun.is_full(S_prime, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = np.copy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
         r = -0.5
       
 
