@@ -13,19 +13,20 @@ import secondary_Functions as secFun
 # a function that returns our initialized neural network
 def initialize_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
-        layers.Conv2D(10, (5, 5), strides=1, activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Conv2D(25, (5, 5), strides=1, padding='valid', activation='relu', input_shape=(n_rows, n_columns, 1)),
         layers.Dropout(0.1),  # This is for regularization
-        layers.Conv2D(7, (2, 2), activation='sigmoid'),
         layers.MaxPooling2D(pool_size=(1, 1)),
         layers.Flatten(),
-        layers.Dense(50, activation='relu'),
+        layers.Dense(100, activation='relu'),
+        layers.Dense(50, activation='softmax'),
         layers.Dense(20),
         layers.Dropout(0.2),
         layers.Dense(1)
     ])
+
     Q.compile(optimizer='adam',
               loss=tf.keras.losses.MeanSquaredError(),
-              metrics=['accuracy'])
+              metrics=['MeanSquaredError'])
     return Q
 
 
@@ -57,14 +58,13 @@ def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
     Q.fit(x=SA_intermediate_state, y=y_target_state)
 
 
-def save_NN(model):
+def save_NN(model, name_of_the_model="name_not_specified"):
     # save a model
-    model.save('NN_parameters/Q.h5')  # creates a HDF5 file 'my_model.h5'
-    model.save_weights('NN_parameters/Q_weights.h5')
+    model.save('NN_parameters/Q_model_' + name_of_the_model)
 
 
-def load_NN(n_rows, n_columns):
+def load_NN(name, n_rows, n_columns):
     # load a model
-    model = initialize_NN(n_rows, n_columns)
-    model.load_weights('NN_parameters/Q_weights.h5')
+    # model = initialize_NN(n_rows, n_columns)
+    model = tf.keras.models.load_model('NN_parameters/Q_model_' + name)
     return model

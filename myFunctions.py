@@ -14,7 +14,7 @@ import neural_network as nn
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
+def play_and_learn(number_of_games, memory_size, Q, name_of_the_model, n_rows, n_columns, epsilon):
     SA_intermediate_state = []
     r = []
     S_prime = []
@@ -25,6 +25,8 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
                                                                                           S_prime,
                                                                                           n_rows, n_columns, epsilon,
                                                                                           print_stuff=False)
+        if int(i) + 1 % 100 == 0:
+            nn.save_NN(Q, name_of_the_model)
 
         if agent_won:
             wins = wins + 1
@@ -40,6 +42,8 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
         SA_intermediate_state.extend(SA_intermediate_state_tmp)
         r.extend(r_tmp)
         S_prime.extend(S_prime_tmp)
+
+    nn.save_NN(Q, name_of_the_model)
 
     return wins, draw
 
@@ -161,15 +165,18 @@ def print_board(board, empty=0, red=-1):
 
 
 # a function where the NN is first trained with epsilon_greedy and then evaluated with epsilon = 0
-def evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns, epsilon):
+def evaluate_performance(Q, name_of_the_model, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns,
+                         epsilon):
     probability_of_success = [0.5]
     total_games_played = [0]
     for i in range(number_of_evaluations):
         print("evaluation number " + str(i))
-        #wins, draw = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
+        # wins, draw = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-        number_of_games_during_evaluation = 6
-        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, n_rows, n_columns, epsilon=0)
+        number_of_games_during_evaluation = number_of_games
+        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, name_of_the_model, n_rows,
+                                    n_columns,
+                                    epsilon=epsilon)
 
         probability_of_success.append((wins) / number_of_games_during_evaluation)
         total_games_played.append(total_games_played[-1] + number_of_games)

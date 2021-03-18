@@ -10,8 +10,8 @@ import myFunctions as myFun
 def remove_one_experience(SA_intermediate_state, r, S_prime, random=False):
     if random:
         slot_to_be_removed = randint(0, len(r) - 1)
-        # if r[slot_to_be_removed] != 0:
-        #    slot_to_be_removed = randint(0, len(r) - 1)
+        if r[slot_to_be_removed] != 0:
+            slot_to_be_removed = randint(0, len(r) - 1)
     else:
         slot_to_be_removed = 0
 
@@ -76,22 +76,29 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     else:
         # the agent makes his move based on the value function
         possible_states = states_that_can_be_reached_from(board, agent_color)
-        max_value = -np.inf
-        possible_choices = []
-        for state in possible_states:
-            value_of_state = nn.Q_eval(Q, state)
 
-            if value_of_state > max_value:
-                del possible_choices[:]
-                possible_choices.append(state)
-                max_value = value_of_state
+        value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
+        max_index = value_of_state.index(max(value_of_state))
+        chosen_state = possible_states[max_index]
 
-            # this elif is actually useless because the confrontation between float can't be equal
-            # (this is how it works in C++)
-            elif value_of_state == max_value:
-                possible_choices.append(state)
+        # old version that consider also the possibility that two states have the same value Q(state)
 
-        chosen_state = possible_choices[randint(0, len(possible_choices) - 1)]
+        # max_value = -np.inf
+        # possible_choices = []
+        # for state in possible_states:
+        #    value_of_state = nn.Q_eval(Q, state)
+        #
+        #   if value_of_state > max_value:
+        #        del possible_choices[:]
+        #        possible_choices.append(state)
+        #        max_value = value_of_state
+
+        # this elif is actually useless because the confrontation between float can't be equal
+        # (this is how it works in C++)
+        #    elif value_of_state == max_value:
+        #        possible_choices.append(state)
+
+        # chosen_state = possible_choices[randint(0, len(possible_choices) - 1)]
         difference_matrix = board - chosen_state
         agent_move_row, agent_move_column = np.nonzero(difference_matrix)
         agent_move_row = agent_move_row[0]
