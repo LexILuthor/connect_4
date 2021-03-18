@@ -68,7 +68,6 @@ def ambient_move(board, ambient_color, empty=0):
 def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
-        print("DEBUGGING: agent plays randomly")
         # the agent play randomly
         agent_move_row, agent_move_column = copy.deepcopy(random_move(board, agent_color, empty))
         return agent_move_row, agent_move_column
