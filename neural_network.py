@@ -13,9 +13,12 @@ import secondary_Functions as secFun
 # a function that returns our initialized neural network
 def initialize_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
-        layers.Conv2D(10, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Conv2D(10, (4, 4), strides=1, activation='relu', input_shape=(n_rows, n_columns, 1)),
         layers.Dropout(0.1),  # This is for regularization
+        layers.Conv2D(7, (2, 2), activation='relu'),
+        layers.MaxPooling2D(pool_size=(1, 1)),
         layers.Flatten(),
+        layers.Dense(50, activation='relu'),  # This can be changed later
         layers.Dense(20, activation='relu'),  # This can be changed later
         layers.Dropout(0.2),
         layers.Dense(1)
@@ -30,7 +33,8 @@ def initialize_NN(n_rows, n_columns):
 def Q_eval(Q, current_state):
     # we need to reshape the state into a tensor
     (n_rows, n_columns) = np.shape(current_state)
-    result = Q(np.reshape(current_state, (1, n_rows, n_columns, 1)))
+    state = np.reshape(current_state, (1, n_rows, n_columns, 1))
+    result = Q(state)
     result = result[0][0].numpy()
     return result
 
@@ -48,7 +52,7 @@ def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
     y_target_state = np.array(y_target_state)
     SA_intermediate_state = np.array(SA_intermediate_state)
     n_rows, n_columns = np.shape(SA_intermediate_state[0])
-    SA_intermediate_state = np.reshape(SA_intermediate_state, (SA_intermediate_state.shape[0], n_rows, n_columns, 1))
+    SA_intermediate_state = np.reshape(SA_intermediate_state, (len(SA_intermediate_state), n_rows, n_columns, 1))
 
     Q.fit(x=SA_intermediate_state, y=y_target_state)
 

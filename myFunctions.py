@@ -48,8 +48,16 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
     board = np.zeros([number_of_rows, number_of_columns]).astype(int)
 
     empty = 0
+
+    # -------------------------------------------------------------------------------
+    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
+    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
     agent_color = 1
     ambient_color = -1
+    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
+    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
+    # -------------------------------------------------------------------------------
+
     agent_won = False
 
     while True:
@@ -152,7 +160,7 @@ def evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size,
         print("evaluation number " + str(i))
         wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-        wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon=0)
+        wins = play_and_learn(10, memory_size, Q, n_rows, n_columns, epsilon=0)
 
         probability_of_success.append(wins / number_of_games)
         total_games_played.append(total_games_played[-1] + (2 * number_of_games))
