@@ -15,10 +15,15 @@ def main():
     agent_color = 1
     epsilon = 0.3
     board = np.zeros([3,4]).astype(int)
-    #print(secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, 0))
-    S = board
-    print(myFun.play_move(Q, S))
+    board[2,:] = np.array([-1, 1, -1, 1]).astype(int)
 
+
+    #print(secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, 0))
+    S = np.copy(board)
+    S_prime = np.copy(myFun.play_move(Q, S))[3]
+    print(myFun.play_move(Q, S))
+    S = np.copy(S_prime)
+    print(myFun.play_move(Q, S))
 
 if __name__ == '__main__':
     main()
