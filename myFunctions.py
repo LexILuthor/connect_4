@@ -19,28 +19,33 @@ def play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon):
     r = []
     S_prime = []
     wins = 0
+    draw = 0
     for i in range(number_of_games):
-        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won = play_a_game(Q, SA_intermediate_state, r, S_prime,
-                                                                               n_rows, n_columns, epsilon,
-                                                                               print_stuff=False)
+        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won, game_draw = play_a_game(Q, SA_intermediate_state, r,
+                                                                                          S_prime,
+                                                                                          n_rows, n_columns, epsilon,
+                                                                                          print_stuff=False)
 
         if agent_won:
             wins = wins + 1
 
+        if game_draw:
+            draw = draw + 1
+
         while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
-            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=False)
+            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=True)
 
         # we put the experience from this last game with the overall experience
         SA_intermediate_state.extend(SA_intermediate_state_tmp)
         r.extend(r_tmp)
         S_prime.extend(S_prime_tmp)
 
-    return wins
+    return wins, draw
 
 
 def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
-                rewards_Wi_Lo_Dr_De=(1.0, -1.0, -0.5, 0), print_stuff=False):
+                rewards_Wi_Lo_Dr_De=(100, -100, -40, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
@@ -59,6 +64,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
     # -------------------------------------------------------------------------------
 
     agent_won = False
+    game_draw = False
 
     while True:
 
@@ -84,6 +90,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         if secFun.is_full(board, empty):
             S_prime.append(board)
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
+            game_draw = True
             break
 
         # ambient makes a (random) move
@@ -99,6 +106,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         if secFun.is_full(board, empty):
             S_prime.append(board)
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
+            game_draw = True
             break
 
         # it was a "nothing happens" action
@@ -117,7 +125,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         print_board(board, empty)
     # ------------------------------------------------------------------------------------------------------------------
 
-    return SA_intermediate_state, r, S_prime, agent_won
+    return SA_intermediate_state, r, S_prime, agent_won, game_draw
 
 
 def print_board(board, empty=0, red=-1):
@@ -158,11 +166,12 @@ def evaluate_performance(Q, number_of_evaluations, number_of_games, memory_size,
     total_games_played = [0]
     for i in range(number_of_evaluations):
         print("evaluation number " + str(i))
-        wins = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
+        #wins, draw = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
 
-        wins = play_and_learn(10, memory_size, Q, n_rows, n_columns, epsilon=0)
+        number_of_games_during_evaluation = 6
+        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, n_rows, n_columns, epsilon=0)
 
-        probability_of_success.append(wins / number_of_games)
-        total_games_played.append(total_games_played[-1] + (2 * number_of_games))
+        probability_of_success.append((wins) / number_of_games_during_evaluation)
+        total_games_played.append(total_games_played[-1] + number_of_games)
 
     secFun.plot_performances(total_games_played, probability_of_success)

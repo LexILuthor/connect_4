@@ -13,13 +13,13 @@ import secondary_Functions as secFun
 # a function that returns our initialized neural network
 def initialize_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
-        layers.Conv2D(10, (4, 4), strides=1, activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Conv2D(10, (5, 5), strides=1, activation='relu', input_shape=(n_rows, n_columns, 1)),
         layers.Dropout(0.1),  # This is for regularization
-        layers.Conv2D(7, (2, 2), activation='relu'),
+        layers.Conv2D(7, (2, 2), activation='sigmoid'),
         layers.MaxPooling2D(pool_size=(1, 1)),
         layers.Flatten(),
-        layers.Dense(50, activation='relu'),  # This can be changed later
-        layers.Dense(20, activation='relu'),  # This can be changed later
+        layers.Dense(50, activation='relu'),
+        layers.Dense(20),
         layers.Dropout(0.2),
         layers.Dense(1)
     ])
