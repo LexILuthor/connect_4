@@ -5,14 +5,15 @@ import neural_network as nn
 import copy
 
 def main():
+    rewards_Wi_Lo_Dr_De = [100, -100, -30, 0]
     number_of_moves = 1000
     memory_size = 10  # Let's set the memory capacity
     # Initialize memory
     memory = []
     # Create empty board
-    board = np.zeros([5,6]).astype(int)
+    board = np.zeros([6,7]).astype(int)
     # Initialize NN
-    Q = nn.create_NN(5,6)
+    Q = nn.create_NN(6,7)
     # Initialize first state
     S = np.copy(board)
     
@@ -21,17 +22,18 @@ def main():
     count_lose = 0
     # let's fill up the memory first
     for move in range(number_of_moves):
-        (S, r, a, S_prime) = copy.deepcopy(myFun.play_move(Q, S, epsilon=0.2))
+        (S, a, r, S_prime) = copy.deepcopy(myFun.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon=0.2))
 
         # THIS IS FOR DEBUGGIN 
-        if r == 1:
+        print(r)
+        if r == rewards_Wi_Lo_Dr_De[0]:
             count_win += 1
-        if r == -1:
+        if r == rewards_Wi_Lo_Dr_De[1]:
             count_lose -= 1
         # if memory is still no full
         if len(memory) < memory_size:
             # add experience to memory
-            memory.append((S,r,a,S_prime))
+            memory.append((S,a,r,S_prime))
         # otherwise we need to empty a slot
         else:
             # delete first element

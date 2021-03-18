@@ -161,7 +161,7 @@ def print_board(board, empty=0, red=-1):
 # Function to make the agent play only one move and returns a 4-tuple (s,a,r,s') of experience
 # If it ends in a terminal state, then S' is set to the empty board. 
 #
-def play_move(Q, S, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
+def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
 
     # agent makes a move
     agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty))
@@ -175,15 +175,15 @@ def play_move(Q, S, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
     if secFun.is_winning(inter_state, agent_move_row, agent_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
         S_prime = copy.deepcopy(np.zeros(np.shape(S)))
-        r = 1
-
+        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[0])
+        return current_state, a, r, S_prime
     
     # check if board is full then it is a draw
     if secFun.is_full(inter_state, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
         S_prime = copy.deepcopy(np.zeros(np.shape(S)))
-        r = -0.5
-    
+        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
+        return current_state, a, r, S_prime
 
     # ambient makes a (random) move
     ambient_move_row, ambient_move_column = copy.deepcopy(secFun.ambient_move(inter_state, ambient_color, empty))
@@ -194,21 +194,21 @@ def play_move(Q, S, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
     if secFun.is_winning(S_prime, ambient_move_row, ambient_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
         S_prime = copy.deepcopy(np.zeros(np.shape(S)))
-        r = -1    
-        
+        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[1])
+        return current_state, a, r, S_prime
 
     # check if board is full
     if secFun.is_full(S_prime, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
         S_prime = copy.deepcopy(np.zeros(np.shape(S)))
-        r = -0.5
-      
+        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
+        return current_state, a, r, S_prime
 
     # it was a "nothing happens" action
     else:
-        r = 0
+        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[3])
+        return current_state, a, r, S_prime
 
-    return current_state, a, r, S_prime
-
+    
         # --------------------------------------------------------------------------------------------------------------
         # here the turn ends (both the agent and the ambient have done their move)
