@@ -9,7 +9,6 @@ import tensorflow.keras.backend as kb
 import copy
 
 
-# a function that returns our initialized neural network
 def create_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
         layers.Conv2D(10, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1)),
@@ -19,11 +18,11 @@ def create_NN(n_rows, n_columns):
         layers.Dropout(0.2),
         layers.Dense(n_columns)  # The number of actions is equal to the number of columns
     ])
-    # Now we set the training configuration
-	Q.compile(optimizer='SGD', 			# adam is a type of stochastic gradient descent 
-              loss=tf.keras.losses.MeanSquaredError(),					# the loss is our loss function 
-              metrics=['accuracy'])
+    Q.compile(optimizer='SGD',
+              loss='mse',
+              metrics=[tf.keras.metrics.MeanSquaredError()])
     return Q
+
 
 
 # Q_eval is a function that given our neural network Q and the current state s returns the values of all actions
@@ -36,45 +35,50 @@ def Q_eval(Q, current_state):
     return np.array(Q(current_state)[0])
 
 
+
+# Function that creates target from experience
+def create_target(Q, experience, gamma):
+	len_experience = len(experience)
+	target = []
+	for exp in range(len_experience):
+		a = experience[exp][1]
+		S = copy.deepcopy(experience[exp][0])
+		# if reward is not zero then we end up in a terminal state
+		if experience[exp][2] == 0:
+			actual_target = gamma * np.max(Q_eval(Q, experience[exp][3]))
+		else:
+			actual_target = experience[exp][2]
+		vector = copy.deepcopy(Q_eval(Q, S))
+		vector[a] = actual_target
+		target.append(vector)
+	target = np.array(target)
+	return target
+
+# Extract S to train
+def create_x_train(experience):
+	len_experience = len(experience)
+	n_rows = np.shape(experience[0][0])[0]
+	n_columns = np.shape(experience[0][0])[1]
+
+	S = []
+	for exp in range(len_experience):
+		S.append(experience[exp][0])
+	S = np.array(S)
+	S = S.reshape(len_experience,n_rows, n_columns, 1)
+	return S
+
+
+
 # a function that given a batch of training set coming from memory D, and the discount rate gamma
 # computes the target value, and then trains the neural network 
 # !!! WARNING !!!
 # I expect experience to be a list with N elements and each element is a 4-list
-def train_my_NN(experience, Q, gamma):
-	# lenght of experience batch
-	len_batch = len(experience)
-	n_actions = np.shape(experience[0][0])[1]
-	n_rows = np.shape(experience[0][0])[0]
-	# initialize list states
-	train_states = np.zeros([n_rows, n_actions, len_batch])
-	# initialize target
-	y = np.zeros([len_batch, n_actions])
-	# initialize prediction
-	y_pred = np.zeros([len_batch, n_actions])
-	for i in range(len_batch):
-		# the first element in each 4-list is the state s
-		s = copy.deepcopy(experience[i][0])
-		# write it in the train states
-		train_states[:,:, i] = copy.deepcopy(s)
-		# the second element is the action a
-		a = copy.deepcopy(experience[i][1])
-		# let's compute the predicted value of (s,a)
-		y_pred[i, :] = copy.deepcopy(Q_eval(Q, s))
-		# the third element in each 4-list is the reward
-		r = experience[i][2]
-		# the 4th element is the state s'
-		s_prime = experience[i][3]
-		# case when s' is not terminal (!!! WARNING !!! I assume that this happens iff r == 0)
-		if r == 0:
-			Q_val = Q_eval(Q, s_prime)
-			target = r + gamma * np.max(Q_val)
-		# case when s' is terminal
-		else:
-			target = r
-		y[i, :] = copy.deepcopy(y_pred[i,:])
-		y[i, a] = copy.deepcopy(target)
-	# train
-	Q.fit(train_states, y, epochs = 1)
-
+def train_my_NN(Q, experience, gamma):
+	len_experience = len(experience)
+	target = create_target(Q, experience, gamma)
+	x_train = create_x_train(experience)
+	history = Q.fit(x_train, target, batch_size=len_experience, epochs = 1)
+	#print(history.history)
+	return
 		
    

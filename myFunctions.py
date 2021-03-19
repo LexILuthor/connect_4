@@ -173,14 +173,14 @@ def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilo
     # check if the agent won
     if secFun.is_winning(inter_state, agent_move_row, agent_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[0])
         return current_state, a, r, S_prime
     
     # check if board is full then it is a draw
     if secFun.is_full(inter_state, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
         return current_state, a, r, S_prime
 
@@ -192,14 +192,14 @@ def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilo
     # check if ambient won
     if secFun.is_winning(S_prime, ambient_move_row, ambient_move_column, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[1])
         return current_state, a, r, S_prime
 
     # check if board is full
     if secFun.is_full(S_prime, empty):
         # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)))
+        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
         return current_state, a, r, S_prime
 
