@@ -62,9 +62,9 @@ def states_that_can_be_reached_from(board, color):
     return possible_states
 
 
-def ambient_move(board, QA, ambient_color, empty=0, epsilon=0):
+def ambient_move(board, Q_ambient, ambient_color, empty=0, epsilon=0):
     ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
-    # ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, QA, empty)
+    # ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, Q_ambient, empty)
     return ambient_move_row, ambient_move_column
 
 

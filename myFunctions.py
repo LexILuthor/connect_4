@@ -7,65 +7,28 @@ import secondary_Functions as secFun
 import neural_network as nn
 
 
-# ----------------------------------------------------------------------------------------------------------------------
-#   TO DO:
-#
-#   
-
-# ----------------------------------------------------------------------------------------------------------------------
-
-def play_and_learn(number_of_games, memory_size, Q, QA, name_of_the_model, n_rows, n_columns, epsilon):
-    SA_intermediate_state = []
-    r = []
-    S_prime = []
-    wins = 0
-    draw = 0
-    for i in range(number_of_games):
-        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won, game_draw = play_a_game(Q, QA, SA_intermediate_state,
-                                                                                          r,
-                                                                                          S_prime,
-                                                                                          n_rows, n_columns, epsilon,
-                                                                                          print_stuff=False)
-        if int(i) + 1 % 100 == 0:
-            nn.save_NN(Q, name_of_the_model)
-
-        if agent_won:
-            wins = wins + 1
-
-        if game_draw:
-            draw = draw + 1
-
-        while len(r) + len(r_tmp) >= memory_size:  # Check if the memory is already full
-            # remove a (random) element from the tree lists N.
-            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=True)
-
-        # we put the experience from this last game with the overall experience
-        SA_intermediate_state.extend(SA_intermediate_state_tmp)
-        r.extend(r_tmp)
-        S_prime.extend(S_prime_tmp)
-
-    nn.save_NN(Q, name_of_the_model)
-
-    return wins, draw
 
 
-def play_a_game(Q, QA, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
-                rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False):
+def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
+                rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False, play_as_second=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
     empty = 0
 
-    # -----------------------------!!!!!  all good !!!!!!!!!------------------------------------
-    # original agent_color = 1, ambient_color = -1
+    # initialize an empty board
+    board = np.zeros([number_of_rows, number_of_columns]).astype(int)
     agent_color = 1
     ambient_color = -1
 
-    # initialize an empty board
-    board = np.zeros([number_of_rows, number_of_columns]).astype(int)
+    # ------- !!!!!!!!!!!!!  If play as second is true the agent will play with vale -1 as second player !!!!!!!!!------
 
-    #let the ambient do the first random move
-    # secFun.random_move(board, ambient_color, empty)
+    if play_as_second:
+        # let the ambient do the first  move at random
+        secFun.random_move(board, ambient_color, empty)
+        agent_color = -1
+        ambient_color = 1
+
     # -------------------------------------------------------------------------------------------------------------
 
     agent_won = False
@@ -100,7 +63,7 @@ def play_a_game(Q, QA, SA_intermediate_state, r, S_prime, number_of_rows=6, numb
             break
 
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, QA, ambient_color, empty)
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty)
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
@@ -133,7 +96,7 @@ def play_a_game(Q, QA, SA_intermediate_state, r, S_prime, number_of_rows=6, numb
         print_board(board, empty)
     # ------------------------------------------------------------------------------------------------------------------
 
-    return SA_intermediate_state, r, S_prime, agent_won, game_draw
+    return agent_won, game_draw
 
 
 def print_board(board, empty=0, red=-1):
@@ -169,20 +132,46 @@ def print_board(board, empty=0, red=-1):
 
 
 # a function where the NN is first trained with epsilon_greedy and then evaluated with epsilon = 0
-def evaluate_performance(Q, QA, name_of_the_model, number_of_evaluations, number_of_games, memory_size, n_rows,
-                         n_columns,
-                         epsilon):
+def evaluate_performance(Q, Q_ambient, name_of_the_model, number_of_evaluations, number_of_games, memory_size, n_rows,
+                         n_columns, epsilon, play_as_second):
     probability_of_success = [0.5]
     total_games_played = [0]
     for i in range(number_of_evaluations):
         print("evaluation number " + str(i))
-        # wins, draw = play_and_learn(number_of_games, memory_size, Q, QA, n_rows, n_columns, epsilon)
 
         number_of_games_during_evaluation = number_of_games
-        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, QA, name_of_the_model, n_rows,
-                                    n_columns, epsilon=epsilon)
+        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, Q_ambient, name_of_the_model,
+                                    n_rows, n_columns, epsilon=epsilon, play_as_second=play_as_second)
 
         probability_of_success.append((wins) / number_of_games_during_evaluation)
         total_games_played.append(total_games_played[-1] + number_of_games)
 
     secFun.plot_performances(total_games_played, probability_of_success)
+
+
+def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model, n_rows, n_columns, epsilon=0,
+                   play_as_second=False):
+    SA_intermediate_state = []
+    r = []
+    S_prime = []
+    wins = 0
+    draw = 0
+    for i in range(number_of_games):
+        agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, n_rows, n_columns, epsilon,
+                                           print_stuff=False, play_as_second=play_as_second)
+        if int(i) + 1 % 100 == 0:
+            nn.save_NN(Q, name_of_the_model)
+
+        if agent_won:
+            wins = wins + 1
+
+        if game_draw:
+            draw = draw + 1
+
+        while len(r) >= memory_size:  # Check if the memory is already full
+            # remove a (random) element from the tree lists N.
+            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=True)
+
+    nn.save_NN(Q, name_of_the_model)
+
+    return wins, draw
