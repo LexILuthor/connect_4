@@ -14,14 +14,15 @@ import neural_network as nn
 
 # ----------------------------------------------------------------------------------------------------------------------
 
-def play_and_learn(number_of_games, memory_size, Q, name_of_the_model, n_rows, n_columns, epsilon):
+def play_and_learn(number_of_games, memory_size, Q, QA, name_of_the_model, n_rows, n_columns, epsilon):
     SA_intermediate_state = []
     r = []
     S_prime = []
     wins = 0
     draw = 0
     for i in range(number_of_games):
-        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won, game_draw = play_a_game(Q, SA_intermediate_state, r,
+        SA_intermediate_state_tmp, r_tmp, S_prime_tmp, agent_won, game_draw = play_a_game(Q, QA, SA_intermediate_state,
+                                                                                          r,
                                                                                           S_prime,
                                                                                           n_rows, n_columns, epsilon,
                                                                                           print_stuff=False)
@@ -48,18 +49,24 @@ def play_and_learn(number_of_games, memory_size, Q, name_of_the_model, n_rows, n
     return wins, draw
 
 
-def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
+def play_a_game(Q, QA, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
                 rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
+    empty = 0
+
+    # -----------------------------!!!!!  all good !!!!!!!!!------------------------------------
+    # original agent_color = 1, ambient_color = -1
+    agent_color = 1
+    ambient_color = -1
+
     # initialize an empty board
     board = np.zeros([number_of_rows, number_of_columns]).astype(int)
 
-    empty = 0
-
-    agent_color = 1
-    ambient_color = -1
+    #let the ambient do the first random move
+    # secFun.random_move(board, ambient_color, empty)
+    # -------------------------------------------------------------------------------------------------------------
 
     agent_won = False
     game_draw = False
@@ -93,7 +100,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
             break
 
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, ambient_color, empty)
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, QA, ambient_color, empty)
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
@@ -115,7 +122,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         # ------------------------------------------------------------------------------------------------------------------
         # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
         if number_of_moves % 4 == 0:
-            batch_size = 4
+            batch_size = 3
             secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
         number_of_moves += 1
         # ------------------------------------------------------------------------------------------------------------------
@@ -162,18 +169,18 @@ def print_board(board, empty=0, red=-1):
 
 
 # a function where the NN is first trained with epsilon_greedy and then evaluated with epsilon = 0
-def evaluate_performance(Q, name_of_the_model, number_of_evaluations, number_of_games, memory_size, n_rows, n_columns,
+def evaluate_performance(Q, QA, name_of_the_model, number_of_evaluations, number_of_games, memory_size, n_rows,
+                         n_columns,
                          epsilon):
     probability_of_success = [0.5]
     total_games_played = [0]
     for i in range(number_of_evaluations):
         print("evaluation number " + str(i))
-        # wins, draw = play_and_learn(number_of_games, memory_size, Q, n_rows, n_columns, epsilon)
+        # wins, draw = play_and_learn(number_of_games, memory_size, Q, QA, n_rows, n_columns, epsilon)
 
         number_of_games_during_evaluation = number_of_games
-        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, name_of_the_model, n_rows,
-                                    n_columns,
-                                    epsilon=epsilon)
+        wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, QA, name_of_the_model, n_rows,
+                                    n_columns, epsilon=epsilon)
 
         probability_of_success.append((wins) / number_of_games_during_evaluation)
         total_games_played.append(total_games_played[-1] + number_of_games)

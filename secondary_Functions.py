@@ -62,8 +62,9 @@ def states_that_can_be_reached_from(board, color):
     return possible_states
 
 
-def ambient_move(board, ambient_color, empty=0):
+def ambient_move(board, QA, ambient_color, empty=0, epsilon=0):
     ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
+    # ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, QA, empty)
     return ambient_move_row, ambient_move_column
 
 
@@ -76,9 +77,9 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     else:
         # the agent makes his move based on the value function
         possible_states = states_that_can_be_reached_from(board, agent_color)
-
-        value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
-        max_index = value_of_state.index(max(value_of_state))
+        value_of_state = nn.Q_eval(Q, possible_states)
+        # value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
+        max_index = np.argmax(value_of_state)
         chosen_state = possible_states[max_index]
 
         # old version that consider also the possibility that two states have the same value Q(state)
@@ -236,8 +237,9 @@ def compute_target_y(Q, SA, r, S_prime, agent_color=1, gamma=1):
         y_target_state = r
     else:
         possible_interstate_from_S_prime = states_that_can_be_reached_from(S_prime, agent_color)
-        Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
-        y_target_state = r + gamma * max(Q_of_possible_states)
+        Q_of_possible_states = nn.Q_eval(Q, possible_interstate_from_S_prime)
+        # Q_of_possible_states = [nn.Q_eval(Q, interstate) for interstate in possible_interstate_from_S_prime]
+        y_target_state = r + gamma * np.max(Q_of_possible_states)
     return y_target_state
 
 
