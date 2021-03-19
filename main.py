@@ -47,7 +47,7 @@ def main():
             # delete first element
             memory.pop(0)
             # add new memory
-            memory.append((S, r, a, S_prime))
+            memory.append((S, a, r, S_prime))
         # S_prime is the next state S
         S = np.copy(S_prime)
 
