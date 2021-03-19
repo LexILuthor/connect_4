@@ -26,7 +26,7 @@ def main():
         # Q = nn.initialize_NN(n_rows, n_columns)
         Q = nn.load_NN(name_of_the_model, n_rows, n_columns)
 
-        #Q_ambient = nn.initialize_NN(n_rows, n_columns)
+        # Q_ambient = nn.initialize_NN(n_rows, n_columns)
         Q_ambient = nn.load_NN(name_of_the_model + "player_2", n_rows, n_columns)
 
     # ------------------------------------------------------------------------------------------------------------------
@@ -37,6 +37,7 @@ def main():
                                n_rows, n_columns, epsilon, play_as_second=train_player_2)
 
     nn.save_NN(Q, name_of_the_model)
+    nn.save_NN(Q_ambient, name_of_the_model + "player_2")
 
 
 if __name__ == '__main__':

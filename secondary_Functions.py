@@ -11,8 +11,6 @@ def remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_sta
                           r_P2, S_prime_P2, random=False):
     if random:
         slot_to_be_removed = randint(0, len(r) - 1)
-        if r[slot_to_be_removed] != 0:
-            slot_to_be_removed = randint(0, len(r) - 1)
     else:
         slot_to_be_removed = 0
 
@@ -77,11 +75,11 @@ def ambient_move(board, Q_ambient, ambient_color, empty=0, epsilon=0):
     # -----------------------------------------------------------------------------------------------------------------
 
     # manual move
-    # ambient_move_column = int(input())
+    #ambient_move_column = int(input())
 
-    # ambient_move_row = get_last_occupied_row_in_column(board, ambient_move_column, empty=0) - 1
+    #ambient_move_row = get_last_occupied_row_in_column(board, ambient_move_column, empty=0) - 1
 
-    # board[ambient_move_row][ambient_move_column] = ambient_color
+    #board[ambient_move_row][ambient_move_column] = ambient_color
 
     # -----------------------------------------------------------------------------------------------------------------
 

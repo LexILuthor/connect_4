@@ -41,7 +41,6 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
         # agent makes a move
         agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
         SA_intermediate_state.append(np.matrix.copy(board))
-        S_prime_P2.append(np.matrix.copy(board))
 
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
@@ -56,6 +55,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[0]))
             S_prime_P2.append(np.matrix.copy(board))
             r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[1])))
+            #print_board(board, empty)  # -------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <------- delete me
             agent_won = True
             break
 
@@ -65,13 +65,17 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             S_prime_P2.append(np.matrix.copy(board))
             r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[2])))
+            #print_board(board, empty)  # -------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <------- delete me
             game_draw = True
             break
 
         S_prime_P2.append(np.matrix.copy(board))
         r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[3])))
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.1)
+        if len(S_prime_P2) != len(SA_intermediate_state_P2):
+            print("here")
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty,
+                                                                    epsilon=0.02)
         SA_intermediate_state_P2.append(np.matrix.copy(board))
 
         # check if ambient won
@@ -80,6 +84,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
             S_prime_P2.append(np.matrix.copy(board))
             r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[0])))
+            #print_board(board, empty)  # -------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <------- delete me
             break
 
         # check if board is full
@@ -88,6 +93,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
             S_prime_P2.append(np.matrix.copy(board))
             r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[2])))
+            #print_board(board, empty)  # -------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! <------- delete me
             game_draw = True
             break
 
@@ -175,11 +181,18 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
     wins = 0
     draw = 0
     for i in range(number_of_games):
+
+        if int(i) % 4 == 0:
+            prints = False
+        else:
+            prints = False
+
         agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
                                            r_P2, S_prime_P2, n_rows, n_columns, epsilon,
-                                           print_stuff=False, play_as_second=play_as_second)
+                                           print_stuff=prints, play_as_second=play_as_second)
         if int(i) + 1 % 100 == 0:
             nn.save_NN(Q, name_of_the_model)
+            nn.save_NN(Q_ambient, name_of_the_model + "player_2")
 
         if agent_won:
             wins = wins + 1
@@ -190,8 +203,9 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
         while len(r) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
             secFun.remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
-                                         r_P2, S_prime_P2, random=True)
+                                         r_P2, S_prime_P2, random=False)
 
     nn.save_NN(Q, name_of_the_model)
+    nn.save_NN(Q_ambient, name_of_the_model + "player_2")
 
     return wins, draw
