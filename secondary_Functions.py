@@ -7,7 +7,8 @@ import neural_network as nn
 import myFunctions as myFun
 
 
-def remove_one_experience(SA_intermediate_state, r, S_prime, random=False):
+def remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
+                          r_P2, S_prime_P2, random=False):
     if random:
         slot_to_be_removed = randint(0, len(r) - 1)
         if r[slot_to_be_removed] != 0:
@@ -18,6 +19,9 @@ def remove_one_experience(SA_intermediate_state, r, S_prime, random=False):
     SA_intermediate_state.pop(slot_to_be_removed)
     r.pop(slot_to_be_removed)
     S_prime.pop(slot_to_be_removed)
+    SA_intermediate_state_P2.pop(slot_to_be_removed)
+    r_P2.pop(slot_to_be_removed)
+    S_prime_P2.pop(slot_to_be_removed)
 
 
 def next_cell_on_the_diagonal(matrix, current_row, current_column, direction):

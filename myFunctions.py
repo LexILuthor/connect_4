@@ -71,7 +71,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
         S_prime_P2.append(np.matrix.copy(board))
         r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[3])))
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.5)
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.1)
         SA_intermediate_state_P2.append(np.matrix.copy(board))
 
         # check if ambient won
@@ -189,7 +189,8 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
 
         while len(r) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
-            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, random=True)
+            secFun.remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
+                                         r_P2, S_prime_P2, random=True)
 
     nn.save_NN(Q, name_of_the_model)
 
