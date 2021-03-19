@@ -6,6 +6,7 @@ import numpy as np
 import tensorflow as tf 
 from tensorflow.keras import layers,  losses
 import tensorflow.keras.backend as kb
+import copy
 
 
 # a function that returns our initialized neural network
@@ -28,13 +29,10 @@ def Q_eval(Q, current_state):
     current_state = np.array(current_state)
     (n_rows, n_columns) = np.shape(current_state)
     current_state = current_state.reshape(1, n_rows, n_columns, 1)
-    return Q.predict(current_state)[0]
-    #return np.array(Q(current_state)[0])
 
-
-###########################
-# To Do List
-
+    #return Q.predict(result)[0]
+    
+    return np.array(Q(current_state)[0])
 
 
 # a function that given a batch of training set coming from memory D, and the discount rate gamma
@@ -44,18 +42,24 @@ def Q_eval(Q, current_state):
 def train_my_NN(experience, Q, gamma):
 	# lenght of experience batch
 	len_batch = len(experience)
+	n_actions = np.shape(experience[0][0])[1]
+	n_rows = np.shape(experience[0][0])[0]
 
+	# initialize list states
+	train_states = np.zeros([n_rows, n_actions, len_batch])
 	# initialize target
-	y = np.zeros(len_batch)
+	y = np.zeros([len_batch, n_actions])
 	# initialize prediction
-	y_pred = np.zeros(len_batch)
+	y_pred = np.zeros([len_batch, n_actions])
 	for i in range(len_batch):
 		# the first element in each 4-list is the state s
-		s = experience[i][0]
+		s = copy.deepcopy(experience[i][0])
+		# write it in the train states
+		train_states[:,:, i] = copy.deepcopy(s)
 		# the second element is the action a
-		a = experience[i][1]
+		a = copy.deepcopy(experience[i][1])
 		# let's compute the predicted value of (s,a)
-		y_pred[i] = Q_eval(Q, s)[a]
+		y_pred[i, :] = copy.deepcopy(Q_eval(Q, s))
 
 		# the third element in each 4-list is the reward
 		r = experience[i][2]
@@ -64,22 +68,28 @@ def train_my_NN(experience, Q, gamma):
 		# case when s' is not terminal (!!! WARNING !!! I assume that this happens iff r == 0)
 		if r == 0:
 			Q_val = Q_eval(Q, s_prime)
-			y[i] = r + gamma * np.max(Q_val)
+			target = r + gamma * np.max(Q_val)
 		# case when s' is terminal
 		else:
-			y[i] = r
+			target = r
+		y[i, :] = copy.deepcopy(y_pred[i,:])
+		y[i, a] = copy.deepcopy(target)
 
-	# define the loss function
-	error = (y - y_pred)
-	loss = np.inner(error,error)
+
+
+	# loss
+	loss = losses.MSE(
+    y, y_pred
+	)
+
 
 	# Now we set the training configuration
-	Q.compile(optimizer='adam', 			# adam is a type of stochastic gradient descent 
+	Q.compile(optimizer='SGD', 			# adam is a type of stochastic gradient descent 
               loss=loss,					# the loss is our loss function 
               metrics=['accuracy'])
 
 	# train
-	Q.train()
+	Q.fit(train_states, y, epochs = 1)
 
 		
    

@@ -166,7 +166,6 @@ def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilo
     # agent makes a move
     agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty))
     current_state = copy.deepcopy(S)
-    # for debugging
     a = copy.copy(agent_move_column)
     # define the intermidiate state
     inter_state = copy.deepcopy(S)
