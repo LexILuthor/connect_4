@@ -4,8 +4,8 @@ import neural_network as nn
 
 
 def main():
-    number_of_games = 20
-    number_of_evaluations = 200
+    number_of_games = 50
+    number_of_evaluations = 40
     n_rows = 7
     n_columns = 6
     epsilon = 0.02
@@ -26,13 +26,12 @@ def main():
         # Q = nn.initialize_NN(n_rows, n_columns)
         Q = nn.load_NN(name_of_the_model, n_rows, n_columns)
 
-        Q_ambient = nn.initialize_NN(n_rows, n_columns)
-        # Q_ambient = nn.load_NN(name_of_the_model + "player_2", n_rows, n_columns)
+        #Q_ambient = nn.initialize_NN(n_rows, n_columns)
+        Q_ambient = nn.load_NN(name_of_the_model + "player_2", n_rows, n_columns)
 
     # ------------------------------------------------------------------------------------------------------------------
 
     # wins, draw = myFun.play_and_learn(number_of_games, memory_size, Q,QA, name_of_the_model, n_rows, n_columns, epsilon)
-
 
     myFun.evaluate_performance(Q, Q_ambient, name_of_the_model, number_of_evaluations, number_of_games, memory_size,
                                n_rows, n_columns, epsilon, play_as_second=train_player_2)

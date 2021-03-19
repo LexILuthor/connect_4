@@ -63,8 +63,24 @@ def states_that_can_be_reached_from(board, color):
 
 
 def ambient_move(board, Q_ambient, ambient_color, empty=0, epsilon=0):
-    ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
-    # ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, Q_ambient, empty)
+    #  p(random move)=epsilon , p(NN)=1-epsilon
+    if random() < epsilon:
+        ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
+    else:
+        ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, Q_ambient,
+                                                                               empty)
+
+    # -----------------------------------------------------------------------------------------------------------------
+
+    # manual move
+    # ambient_move_column = int(input())
+
+    # ambient_move_row = get_last_occupied_row_in_column(board, ambient_move_column, empty=0) - 1
+
+    # board[ambient_move_row][ambient_move_column] = ambient_color
+
+    # -----------------------------------------------------------------------------------------------------------------
+
     return ambient_move_row, ambient_move_column
 
 

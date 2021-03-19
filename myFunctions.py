@@ -7,8 +7,6 @@ import secondary_Functions as secFun
 import neural_network as nn
 
 
-
-
 def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
                 rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False, play_as_second=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
@@ -63,7 +61,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
             break
 
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty)
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.5)
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
@@ -84,8 +82,8 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
         # here the turn ends (both the agent and the ambient have done their move)
         # ------------------------------------------------------------------------------------------------------------------
         # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
-        if number_of_moves % 4 == 0:
-            batch_size = 3
+        if number_of_moves % 1 == 0:
+            batch_size = 1
             secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
         number_of_moves += 1
         # ------------------------------------------------------------------------------------------------------------------
