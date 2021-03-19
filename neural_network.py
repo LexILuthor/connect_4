@@ -19,7 +19,10 @@ def create_NN(n_rows, n_columns):
         layers.Dropout(0.2),
         layers.Dense(n_columns)  # The number of actions is equal to the number of columns
     ])
-
+    # Now we set the training configuration
+	Q.compile(optimizer='SGD', 			# adam is a type of stochastic gradient descent 
+              loss=tf.keras.losses.MeanSquaredError(),					# the loss is our loss function 
+              metrics=['accuracy'])
     return Q
 
 
@@ -29,9 +32,7 @@ def Q_eval(Q, current_state):
     current_state = np.array(current_state)
     (n_rows, n_columns) = np.shape(current_state)
     current_state = current_state.reshape(1, n_rows, n_columns, 1)
-
     #return Q.predict(result)[0]
-    
     return np.array(Q(current_state)[0])
 
 
@@ -44,7 +45,6 @@ def train_my_NN(experience, Q, gamma):
 	len_batch = len(experience)
 	n_actions = np.shape(experience[0][0])[1]
 	n_rows = np.shape(experience[0][0])[0]
-
 	# initialize list states
 	train_states = np.zeros([n_rows, n_actions, len_batch])
 	# initialize target
@@ -60,7 +60,6 @@ def train_my_NN(experience, Q, gamma):
 		a = copy.deepcopy(experience[i][1])
 		# let's compute the predicted value of (s,a)
 		y_pred[i, :] = copy.deepcopy(Q_eval(Q, s))
-
 		# the third element in each 4-list is the reward
 		r = experience[i][2]
 		# the 4th element is the state s'
@@ -74,20 +73,6 @@ def train_my_NN(experience, Q, gamma):
 			target = r
 		y[i, :] = copy.deepcopy(y_pred[i,:])
 		y[i, a] = copy.deepcopy(target)
-
-
-
-	# loss
-	loss = losses.MSE(
-    y, y_pred
-	)
-
-
-	# Now we set the training configuration
-	Q.compile(optimizer='SGD', 			# adam is a type of stochastic gradient descent 
-              loss=loss,					# the loss is our loss function 
-              metrics=['accuracy'])
-
 	# train
 	Q.fit(train_states, y, epochs = 1)
 
