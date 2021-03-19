@@ -7,8 +7,9 @@ import secondary_Functions as secFun
 import neural_network as nn
 
 
-def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
-                rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False, play_as_second=False):
+def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2, r_P2, S_prime_P2,
+                number_of_rows=6, number_of_columns=7, epsilon=0.1, rewards_Wi_Lo_Dr_De=(10, -10, -3, 0),
+                print_stuff=False, play_as_second=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
@@ -33,11 +34,14 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
     game_draw = False
 
     number_of_moves = 0
+    SA_intermediate_state_P2.append(np.matrix.copy(board))
+
     while True:
 
         # agent makes a move
         agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty)
         SA_intermediate_state.append(np.matrix.copy(board))
+        S_prime_P2.append(np.matrix.copy(board))
 
         # --------------------------------------------------------------------------------------------------------------
         # graphic stuff
@@ -50,6 +54,8 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
             # Since we are in a terminal state S_prime is not important
             S_prime.append(np.matrix.copy(board))
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[0]))
+            S_prime_P2.append(np.matrix.copy(board))
+            r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[1])))
             agent_won = True
             break
 
@@ -57,22 +63,31 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
         if secFun.is_full(board, empty):
             S_prime.append(board)
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
+            S_prime_P2.append(np.matrix.copy(board))
+            r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[2])))
             game_draw = True
             break
 
+        S_prime_P2.append(np.matrix.copy(board))
+        r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[3])))
         # ambient makes a (random) move
         ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.5)
+        SA_intermediate_state_P2.append(np.matrix.copy(board))
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):
             S_prime.append(np.matrix.copy(board))
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
+            S_prime_P2.append(np.matrix.copy(board))
+            r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[0])))
             break
 
         # check if board is full
         if secFun.is_full(board, empty):
             S_prime.append(board)
             r.append(copy.copy(rewards_Wi_Lo_Dr_De[2]))
+            S_prime_P2.append(np.matrix.copy(board))
+            r_P2.append((copy.copy(rewards_Wi_Lo_Dr_De[2])))
             game_draw = True
             break
 
@@ -85,6 +100,8 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
         if number_of_moves % 1 == 0:
             batch_size = 1
             secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
+            secFun.select_the_batch_and_train_the_NN(batch_size, Q_ambient, SA_intermediate_state_P2, r_P2, S_prime_P2,
+                                                     ambient_color)
         number_of_moves += 1
         # ------------------------------------------------------------------------------------------------------------------
 
@@ -152,10 +169,14 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
     SA_intermediate_state = []
     r = []
     S_prime = []
+    SA_intermediate_state_P2 = []
+    r_P2 = []
+    S_prime_P2 = []
     wins = 0
     draw = 0
     for i in range(number_of_games):
-        agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, n_rows, n_columns, epsilon,
+        agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
+                                           r_P2, S_prime_P2, n_rows, n_columns, epsilon,
                                            print_stuff=False, play_as_second=play_as_second)
         if int(i) + 1 % 100 == 0:
             nn.save_NN(Q, name_of_the_model)
