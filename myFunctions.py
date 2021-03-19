@@ -49,7 +49,7 @@ def play_and_learn(number_of_games, memory_size, Q, name_of_the_model, n_rows, n
 
 
 def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_of_columns=7, epsilon=0.1,
-                rewards_Wi_Lo_Dr_De=(100, -100, -40, 0), print_stuff=False):
+                rewards_Wi_Lo_Dr_De=(10, -10, -3, 0), print_stuff=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
 
@@ -58,18 +58,13 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
 
     empty = 0
 
-    # -------------------------------------------------------------------------------
-    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
-    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
     agent_color = 1
     ambient_color = -1
-    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
-    # WARNING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! changed agent and ambient color!!!!!!!!!!!!!!!!!!!!!!!!!!! WARNING !!!!!!!
-    # -------------------------------------------------------------------------------
 
     agent_won = False
     game_draw = False
 
+    number_of_moves = 0
     while True:
 
         # agent makes a move
@@ -86,7 +81,7 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         if secFun.is_winning(board, agent_move_column, agent_move_row, empty):
             # Since we are in a terminal state S_prime is not important
             S_prime.append(np.matrix.copy(board))
-            r.append(copy.copy(rewards_Wi_Lo_Dr_De[1]))
+            r.append(copy.copy(rewards_Wi_Lo_Dr_De[0]))
             agent_won = True
             break
 
@@ -119,8 +114,10 @@ def play_a_game(Q, SA_intermediate_state, r, S_prime, number_of_rows=6, number_o
         # here the turn ends (both the agent and the ambient have done their move)
         # ------------------------------------------------------------------------------------------------------------------
         # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
-        batch_size = 4
-        secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
+        if number_of_moves % 4 == 0:
+            batch_size = 4
+            secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
+        number_of_moves += 1
         # ------------------------------------------------------------------------------------------------------------------
 
     # ------------------------------------------------------------------------------------------------------------------

@@ -13,20 +13,16 @@ import secondary_Functions as secFun
 # a function that returns our initialized neural network
 def initialize_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
-        layers.Conv2D(25, (5, 5), strides=1, padding='valid', activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Conv2D(10, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1,)),
         layers.Dropout(0.1),  # This is for regularization
-        layers.MaxPooling2D(pool_size=(1, 1)),
         layers.Flatten(),
-        layers.Dense(100, activation='relu'),
-        layers.Dense(50, activation='softmax'),
-        layers.Dense(20),
-        layers.Dropout(0.2),
+        layers.Dense(20, activation='relu'),  # This can be changed later
+        layers.Dropout(0.2),  # The number of actions is equal to the number of columns
         layers.Dense(1)
     ])
-
-    Q.compile(optimizer='adam',
-              loss=tf.keras.losses.MeanSquaredError(),
-              metrics=['MeanSquaredError'])
+    Q.compile(optimizer='SGD',
+              loss='mse',
+              metrics=[tf.keras.metrics.MeanSquaredError()])
     return Q
 
 
@@ -47,13 +43,13 @@ def Q_eval(Q, current_state):
 # a function that given training set (we still have to discuss on the type of the training set in input), computes
 # the target value, and then trains the neural network using the training set
 def train_my_NN(Q, SA_intermediate_state, r, S_prime, agent_color=1):
-    gamma = 1
+    gamma = 0.9
     y_target_state = [secFun.compute_target_y(Q, SA_intermediate_state[i], r[i], S_prime[i], agent_color, gamma) for i
                       in range(len(r))]
     y_target_state = np.array(y_target_state)
     SA_intermediate_state = np.array(SA_intermediate_state)
     n_rows, n_columns = np.shape(SA_intermediate_state[0])
-    SA_intermediate_state = np.reshape(SA_intermediate_state, (len(SA_intermediate_state), n_rows, n_columns, 1))
+    SA_intermediate_state = np.reshape(SA_intermediate_state, (SA_intermediate_state.shape[0], n_rows, n_columns, 1))
 
     Q.fit(x=SA_intermediate_state, y=y_target_state)
 
