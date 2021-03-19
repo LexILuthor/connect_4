@@ -61,7 +61,7 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, number_of_rows=
             break
 
         # ambient makes a (random) move
-        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=0.5)
+        ambient_move_row, ambient_move_column = secFun.ambient_move(board, Q_ambient, ambient_color, empty, epsilon=1)
 
         # check if ambient won
         if secFun.is_winning(board, ambient_move_column, ambient_move_row, empty):

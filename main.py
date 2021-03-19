@@ -4,7 +4,7 @@ import neural_network as nn
 
 
 def main():
-    number_of_games = 50
+    number_of_games = 30
     number_of_evaluations = 40
     n_rows = 7
     n_columns = 6
