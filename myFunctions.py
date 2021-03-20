@@ -8,7 +8,7 @@ import neural_network as nn
 
 
 def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2, r_P2, S_prime_P2,
-                number_of_rows=6, number_of_columns=7, epsilon=0.1, rewards_Wi_Lo_Dr_De=(10, -10, -3, 0),
+                number_of_rows=6, number_of_columns=7, epsilon=0.1, rewards_Wi_Lo_Dr_De=(10, -10, 3, 0),
                 print_stuff=False, play_as_second=False):
     # "rewards_Wi_Lo_Dr_De" is the vector containing respectively the reward for a winning action, losing action,
     # draw action, nothing happens action
@@ -164,7 +164,7 @@ def evaluate_performance(Q, Q_ambient, name_of_the_model, number_of_evaluations,
         wins, draw = play_and_learn(number_of_games_during_evaluation, memory_size, Q, Q_ambient, name_of_the_model,
                                     n_rows, n_columns, epsilon=epsilon, play_as_second=play_as_second)
 
-        probability_of_success.append((wins) / number_of_games_during_evaluation)
+        probability_of_success.append((wins + draw) / number_of_games_during_evaluation)
         total_games_played.append(total_games_played[-1] + number_of_games)
 
     secFun.plot_performances(total_games_played, probability_of_success)
@@ -192,7 +192,7 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
                                            print_stuff=prints, play_as_second=play_as_second)
         if int(i) + 1 % 100 == 0:
             nn.save_NN(Q, name_of_the_model)
-            nn.save_NN(Q_ambient, name_of_the_model + "player_2")
+            nn.save_NN(Q_ambient, name_of_the_model + "-player_2")
 
         if agent_won:
             wins = wins + 1
@@ -206,6 +206,6 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
                                          r_P2, S_prime_P2, random=False)
 
     nn.save_NN(Q, name_of_the_model)
-    nn.save_NN(Q_ambient, name_of_the_model + "player_2")
+    nn.save_NN(Q_ambient, name_of_the_model + "-player_2")
 
     return wins, draw

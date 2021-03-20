@@ -10,24 +10,24 @@ def main():
     n_columns = 6
     epsilon = 0.02
     memory_size = 500
-    name_of_the_model: str = "franz_NN_2"
+    name_of_the_model: str = "draw_is_zero_p1_is_tanti_layers_p2_is_franz_NN_2"
 
     train_player_2 = False
 
     if train_player_2:
-        # Q = nn.initialize_NN(n_rows, n_columns)
-        Q = nn.load_NN(name_of_the_model + "player_2", n_rows, n_columns)
+        #Q = nn.initialize_NN(n_rows, n_columns)
+        Q = nn.load_NN(name_of_the_model + "-player_2", n_rows, n_columns)
 
         # Q_ambient = nn.initialize_NN(n_rows, n_columns)
         Q_ambient = nn.load_NN(name_of_the_model, n_rows, n_columns)
-        name_of_the_model = name_of_the_model + "player_2"
+        name_of_the_model = name_of_the_model + "-player_2"
 
     else:
-        # Q = nn.initialize_NN(n_rows, n_columns)
+        #Q = nn.initialize_NN(n_rows, n_columns)
         Q = nn.load_NN(name_of_the_model, n_rows, n_columns)
 
         # Q_ambient = nn.initialize_NN(n_rows, n_columns)
-        Q_ambient = nn.load_NN(name_of_the_model + "player_2", n_rows, n_columns)
+        Q_ambient = nn.load_NN(name_of_the_model + "-player_2", n_rows, n_columns)
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ def main():
                                n_rows, n_columns, epsilon, play_as_second=train_player_2)
 
     nn.save_NN(Q, name_of_the_model)
-    nn.save_NN(Q_ambient, name_of_the_model + "player_2")
+    nn.save_NN(Q_ambient, name_of_the_model + "-player_2")
 
 
 if __name__ == '__main__':

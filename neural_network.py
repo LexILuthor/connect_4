@@ -14,8 +14,10 @@ import secondary_Functions as secFun
 def initialize_NN(n_rows, n_columns):
     Q = tf.keras.Sequential([
         layers.Conv2D(10, (4, 4), strides=1, activation='relu', input_shape=(n_rows, n_columns, 1,)),
-        layers.Dropout(0.1),  # This is for regularization
+        layers.Conv2D(25, (2, 2), strides=1, padding='valid', activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.MaxPooling2D(pool_size=(1, 1)),
         layers.Flatten(),
+        layers.Dense(15, activation='softmax'),
         layers.Dense(20, activation='relu'),  # This can be changed later
         layers.Dropout(0.2),  # The number of actions is equal to the number of columns
         layers.Dense(1)
