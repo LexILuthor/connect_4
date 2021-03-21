@@ -11,7 +11,7 @@ def remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_sta
                           r_P2, S_prime_P2, random=False):
     if random:
         slot_to_be_removed = randint(0, len(r) - 1)
-        if r[slot_to_be_removed]!=0:
+        if r[slot_to_be_removed] != 0:
             slot_to_be_removed = randint(0, len(r) - 1)
     else:
         slot_to_be_removed = 0
@@ -67,14 +67,15 @@ def states_that_can_be_reached_from(board, color):
 
 
 def ambient_move(board, Q_ambient, ambient_color, empty=0, epsilon=0):
-    automatic_move=False
+    automatic_move = True
     if automatic_move:
         #  p(random move)=epsilon , p(NN)=1-epsilon
         if random() < epsilon:
             ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
         else:
-            ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon, Q_ambient,
-                                                                               empty)
+            ambient_move_row, ambient_move_column = agent_move_following_epsilon_Q(board, ambient_color, epsilon,
+                                                                                   Q_ambient,
+                                                                                   empty)
 
     # -----------------------------------------------------------------------------------------------------------------
     else:
