@@ -40,7 +40,7 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
         if int(i) % 4 == 0:
             prints = True
         else:
-            prints = False
+            prints = True
 
         agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
                                            r_P2, S_prime_P2, n_rows, n_columns, epsilon,
@@ -58,7 +58,7 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
         while len(r) >= memory_size:  # Check if the memory is already full
             # remove a (random) element from the tree lists N.
             secFun.remove_one_experience(SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
-                                         r_P2, S_prime_P2, random=True)
+                                         r_P2, S_prime_P2, random=False)
 
     nn.save_NN(Q, name_of_the_model)
     nn.save_NN(Q_ambient, name_of_the_model + "-player_2")

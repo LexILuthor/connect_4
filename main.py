@@ -4,12 +4,12 @@ import neural_network as nn
 
 
 def main():
-    number_of_games = 30
-    number_of_evaluations = 30
+    number_of_games = 3
+    number_of_evaluations = 3
     n_rows = 7
     n_columns = 6
     epsilon = 0.02
-    memory_size = 500
+    memory_size = 50
     name_of_the_model: str = "dense_going_for_a_draw"
 
     train_player_2 = False
