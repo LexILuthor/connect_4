@@ -9,15 +9,25 @@ import tensorflow.keras.backend as kb
 import copy
 
 
-def create_NN(n_rows, n_columns):
+def create_NN(n_rows, n_columns, learn_rate = 0.01):
     Q = tf.keras.Sequential([
-        layers.Conv2D(10, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1)),
-        layers.Dropout(0.1),  # This is for regularization
+        #layers.Conv2D(50, (3, 3), activation='relu', input_shape=(n_rows, n_columns, 1)),
+        #layers.Dropout(0.1),  # This is for regularization
         layers.Flatten(),
-        layers.Dense(20, activation='relu'),  # This can be changed later
-        layers.Dropout(0.2),
+        layers.Dense(400, activation='relu'),  # This can be changed later
+        layers.Dropout(0.1),
+        layers.Dense(300, activation='relu'),  # This can be changed later
+        layers.Dropout(0.1),
+        layers.Dense(200, activation='relu'),  # This can be changed later
+        layers.Dropout(0.1),
         layers.Dense(n_columns)  # The number of actions is equal to the number of columns
     ])
+
+    optim = tf.keras.optimizers.SGD(
+    learning_rate=learn_rate, momentum=0.0, nesterov=False, name='SGD'
+	)
+
+
     Q.compile(optimizer='SGD',
               loss='mse',
               metrics=[tf.keras.metrics.MeanSquaredError()])
@@ -73,11 +83,11 @@ def create_x_train(experience):
 # computes the target value, and then trains the neural network 
 # !!! WARNING !!!
 # I expect experience to be a list with N elements and each element is a 4-list
-def train_my_NN(Q, experience, gamma):
+def train_my_NN(Q, experience, gamma, n_epochs = 1):
 	len_experience = len(experience)
 	target = create_target(Q, experience, gamma)
 	x_train = create_x_train(experience)
-	history = Q.fit(x_train, target, batch_size=len_experience, epochs = 1)
+	history = Q.fit(x_train, target, batch_size=len_experience, epochs = n_epochs)
 	#print(history.history)
 	return
 		
