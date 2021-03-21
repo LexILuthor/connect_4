@@ -1,0 +1,9 @@
+# Files
+
+*.png
+*.txt
+
+# Project exclude paths
+/venv/
+/arena_forza_4/
+/NN_parameters/

@@ -6,6 +6,7 @@ import neural_network as nn
 import copy
 import random
 
+
 def main():
     # Initialize NN
     Q = nn.create_NN(7,8)
@@ -23,16 +24,22 @@ def main():
     rewards_Wi_Lo_Dr_De = [10, -10, -0.1, 0]
     number_of_moves = 20000
     memory_size = 10000  # Let's set the memory capacity
+ 
     # Initialize memory
     memory = []
     # Create empty board
-    board = np.zeros([7,8]).astype(int)
+    board = np.zeros([7, 8]).astype(int)
     # Initialize NN
-    Q = nn.create_NN(7,8, learn_rate)
+ 
+    Q = nn.create_NN(7, 8)
     # Initialize first state
     S = np.copy(board)
-    
-    
+
+    # FOR DEBUGGING
+    count_win = 0
+    count_lose = 0
+    train_freq = 10
+    batch_size = 5
 
     for move in range(number_of_moves):
         # Make one turn (agent plays a move, environment plays its move)
@@ -43,20 +50,21 @@ def main():
         # if memory is still no full
         if len(memory) < memory_size:
             # add experience to memory
-            memory.append((S,a,r,S_prime))
+            memory.append((S, a, r, S_prime))
         # otherwise we need to empty a slot
         else:
             # delete first element
             memory.pop(0)
             # add new memory
-            memory.append((S,a,r,S_prime))
-        
+
+            memory.append((S, a, r, S_prime))
         # S_prime is the next state S
         S = np.copy(S_prime)
 #----------------------------------------------------
 #           TRAINING
 
         if (move > batch_size) and (move % train_freq == 0):
+       
             batch = random.sample(memory, batch_size)
             nn.train_my_NN(Q, batch, gamma, n_epochs)
 
@@ -86,11 +94,12 @@ def main():
 #------------------------------------------------------
 #          TEST 
     
+
     count_win = 0
     count_lose = 0
     count_draw = 0
     for move in range(number_of_moves):
-        (S, a, r, S_prime) = copy.deepcopy(myFun.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon=0))
+        S, a, r, S_prime = copy.deepcopy(myFun.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon=0))
         if r == rewards_Wi_Lo_Dr_De[0]:
             count_win += 1
         if r == rewards_Wi_Lo_Dr_De[1]:
@@ -114,6 +123,7 @@ def main():
     print("The AI won the ", round((count_win/(num_games))*100,2), "% ", "of the games." )
     
 #------------------------------------------------------------------------------------
+
 
 if __name__ == '__main__':
     main()
