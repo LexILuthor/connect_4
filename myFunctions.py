@@ -37,10 +37,10 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
     draw = 0
     for i in range(number_of_games):
 
-        if int(i) % 4 == 0:
+        if int(i) % 20 == 0:
             prints = True
         else:
-            prints = True
+            prints = False
 
         agent_won, game_draw = play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate_state_P2,
                                            r_P2, S_prime_P2, n_rows, n_columns, epsilon,
@@ -162,8 +162,8 @@ def play_a_game(Q, Q_ambient, SA_intermediate_state, r, S_prime, SA_intermediate
         # here the turn ends (both the agent and the ambient have done their move)
         # ------------------------------------------------------------------------------------------------------------------
         # sample a batch of 4 from (SA_intermediate_state, r, S_prime)
-        if number_of_moves % 8 == 0:
-            batch_size = 8
+        if number_of_moves % 1 == 0:
+            batch_size = 1
             secFun.select_the_batch_and_train_the_NN(batch_size, Q, SA_intermediate_state, r, S_prime, agent_color)
             secFun.select_the_batch_and_train_the_NN(batch_size, Q_ambient, SA_intermediate_state_P2, r_P2, S_prime_P2,
                                                      ambient_color)

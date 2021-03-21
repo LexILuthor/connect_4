@@ -4,15 +4,15 @@ import neural_network as nn
 
 
 def main():
-    number_of_games = 3
-    number_of_evaluations = 3
+    number_of_games = 40
+    number_of_evaluations = 40
     n_rows = 7
     n_columns = 6
     epsilon = 0.02
-    memory_size = 50
+    memory_size = 2
     name_of_the_model: str = "dense_going_for_a_draw"
 
-    train_player_2 = False
+    train_player_2 = False # it is not what you think, leave it be
 
     if train_player_2:
         # Q = nn.initialize_NN(n_rows, n_columns)
