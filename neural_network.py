@@ -16,6 +16,7 @@ def initialize_NN(n_rows, n_columns):
         layers.Flatten(),
         layers.Dense(n_rows*n_columns, activation='relu'),
         layers.Dropout(0.1),
+        layers.Dense(2000, activation='relu'),
         layers.Dense(900, activation='relu'),
         layers.Dense(300, activation='relu'),
         layers.Dropout(0.1),

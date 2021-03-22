@@ -38,7 +38,7 @@ def play_and_learn(number_of_games, memory_size, Q, Q_ambient, name_of_the_model
     for i in range(number_of_games):
 
         if int(i) % 20 == 0:
-            prints = True
+            prints = False
         else:
             prints = False
 
