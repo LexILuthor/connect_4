@@ -40,10 +40,10 @@ def main():
     memory_size = 5000
     n_rows = 7
     n_columns = 8
-    #Q_player1 = nn.load_NN("dense_2_hidden_fat_pl1", n_rows, n_columns)
-    #Q_player2 = nn.load_NN("dense_2_hidden_fat_pl2", n_rows, n_columns)
-    Q_player1 = nn.create_NN(n_rows, n_columns)
-    Q_player2 = nn.create_NN(n_rows, n_columns)
+    Q_player1 = nn.load_NN("dense_sigmoid_pl1", n_rows, n_columns)
+    Q_player2 = nn.load_NN("dense_sigmoid_pl2", n_rows, n_columns)
+    #Q_player1 = nn.create_NN(n_rows, n_columns)
+    #Q_player2 = nn.create_NN(n_rows, n_columns)
     # compile
     Q_player1.compile(optimizer='adam',
               loss='mse',
@@ -52,14 +52,15 @@ def main():
               loss='mse',
               metrics=[tf.keras.metrics.MeanSquaredError()])
     
-    mem1 = memory.create_memory(memory_size, n_rows, n_columns, Q_player1, epsilon = 1)
-    mem2 = memory.create_memory(memory_size, n_rows, n_columns, Q_player2, epsilon = 1)
+    
 
 #-----------------------------------------------------------------------------------
     precision_VS_random = 0
     while precision_VS_random < 98.5:
         history_player1 = []
         precision_player1 = 0
+        # initialize memory for player 1
+        mem1 = memory.create_memory(memory_size, n_rows, n_columns, Q_player1, epsilon = 1)
         while precision_player1 < 95 :
             #Q_player1 = nn.load_NN("dense_leaky_relu_pl1", n_rows, n_columns)
             Q_player1 = copy.copy(train.freeze_train_player1(
@@ -72,11 +73,11 @@ def main():
             number_of_moves = 1000,
             freeze_steps_player1 = 50,
             train_freq_player1 = 1,
-            batch_size_player1 = 20,
+            batch_size_player1 = 30,
             rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
             epsilon_player1 = 0.1,
             gamma = 0.95,
-            n_epochs = 1
+            n_epochs = 2
             ))
             nn.save_NN(Q_player1, "dense_sigmoid_pl1")
             test.test_vs_AI_player1(Q_player1, Q_player2, 7,8)
@@ -90,6 +91,8 @@ def main():
 #-----------------------------------------------------------------------
         history_player2 = []
         precision_player2 = 0
+        # Initialize memory for player 2
+        mem2 = memory.create_memory(memory_size, n_rows, n_columns, Q_player2, epsilon = 1)
         while precision_player2 < 95 :
             #Q_player2 = nn.load_NN("dense_leaky_relu_pl2", n_rows, n_columns)
             Q_player2 = copy.copy(train.freeze_train_player2(
@@ -102,11 +105,11 @@ def main():
             number_of_moves = 1000,
             freeze_steps_player2 = 50,
             train_freq_player2 = 1,
-            batch_size_player2 = 20,
+            batch_size_player2 = 30,
             rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
             epsilon_player2 = 0.1,
             gamma = 0.95,
-            n_epochs = 1
+            n_epochs = 2
             ))
             nn.save_NN(Q_player2, "dense_sigmoid_pl1")
             test.test_vs_AI_player2(Q_player1, Q_player2, 7,8)
