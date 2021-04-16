@@ -1,128 +1,122 @@
 import os
 import numpy as np
-import secondary_Functions as secFun
-import myFunctions as myFun
-import neural_network as nn
 import copy
 import random
+import tensorflow as tf
+#---------------------------------
+import secondary_Functions as secFun
+import testing_functions as test
+import neural_network as nn
+import memory 
+import training_functions as train
+
+##########################################################################################
+
+# Available NN: 
+# test  (dense)     exagerated nunber of neurons and layers
+# shallow_1         shallow (dense) nn: in+out             rate of success vs random: ~90%
+# shallow_2         as shallow_1
+# 
+# CNN_1             cnn: in+con+pool+dense(large)+out
+# CNN_2             cnn: in+con+pool+con+pool+dense(small)+out
+# CNN_3             cnn: in + con + dense + dense + out
+# CNN_4             cnn: as CNN_3
+
+# dense_2_hidden_pl1    dense with 2 hidden layers (only 100 neur per layer)
+# dense_2_hidden_pl2    dense wiht 2 hidden layers (only 100 neur per layer)
+#
+# dense_2_hidden_pl1    dense with 2 hidden layers (256 neur per layer)
+# dense_2_hidden_pl2    dense with 2 hidden layers (256 neur per layer)
+#
+# freeze            dense with 1 hidden layer (trained only with freeze method) vs random ~77%
+
+# dense_sigmoid_pl1    dense with 2 hidden layers (256 neur per layer)
+# dense_sigmoid_pl2    dense with 2 hidden layers (256 neur per layer)
+#
 
 
 def main():
-    # Initialize NN
-    Q = nn.create_NN(7,8)
+    N = 10
+    memory_size = 5000
+    n_rows = 7
+    n_columns = 8
+    #Q_player1 = nn.load_NN("dense_2_hidden_fat_pl1", n_rows, n_columns)
+    #Q_player2 = nn.load_NN("dense_2_hidden_fat_pl2", n_rows, n_columns)
+    Q_player1 = nn.create_NN(n_rows, n_columns)
+    Q_player2 = nn.create_NN(n_rows, n_columns)
+    # compile
+    Q_player1.compile(optimizer='adam',
+              loss='mse',
+              metrics=[tf.keras.metrics.MeanSquaredError()])
+    Q_player2.compile(optimizer='adam',
+              loss='mse',
+              metrics=[tf.keras.metrics.MeanSquaredError()])
     
+    mem1 = memory.create_memory(memory_size, n_rows, n_columns, Q_player1, epsilon = 1)
+    mem2 = memory.create_memory(memory_size, n_rows, n_columns, Q_player2, epsilon = 1)
 
+#-----------------------------------------------------------------------------------
+    precision_VS_random = 0
+    while precision_VS_random < 98.5:
+        history_player1 = []
+        precision_player1 = 0
+        while precision_player1 < 95 :
+            #Q_player1 = nn.load_NN("dense_leaky_relu_pl1", n_rows, n_columns)
+            Q_player1 = copy.copy(train.freeze_train_player1(
+            Q_player1,
+            Q_player2,
+            n_rows,
+            n_columns, 
+            memory_player1 = mem1,
+            episodic = False,
+            number_of_moves = 1000,
+            freeze_steps_player1 = 50,
+            train_freq_player1 = 1,
+            batch_size_player1 = 20,
+            rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
+            epsilon_player1 = 0.1,
+            gamma = 0.95,
+            n_epochs = 1
+            ))
+            nn.save_NN(Q_player1, "dense_sigmoid_pl1")
+            test.test_vs_AI_player1(Q_player1, Q_player2, 7,8)
+            precision_player1 = copy.copy(test.test_vs_AI_player1(Q_player1, Q_player2, 7,8))
+            history_player1.append(round(precision_player1,2))
+            print(history_player1)
+            # keep track of precision vs random
+            precision_VS_random = test.test_vs_random(Q_player1, 7,8)
+            #os.system('spd-say "Press Enter to continue"')
+            #input("Press Enter to continue...")
+#-----------------------------------------------------------------------
+        history_player2 = []
+        precision_player2 = 0
+        while precision_player2 < 95 :
+            #Q_player2 = nn.load_NN("dense_leaky_relu_pl2", n_rows, n_columns)
+            Q_player2 = copy.copy(train.freeze_train_player2(
+            Q_player1,
+            Q_player2,
+            n_rows,
+            n_columns, 
+            memory_player2 = mem2,
+            episodic = False,
+            number_of_moves = 1000,
+            freeze_steps_player2 = 50,
+            train_freq_player2 = 1,
+            batch_size_player2 = 20,
+            rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
+            epsilon_player2 = 0.1,
+            gamma = 0.95,
+            n_epochs = 1
+            ))
+            nn.save_NN(Q_player2, "dense_sigmoid_pl1")
+            test.test_vs_AI_player2(Q_player1, Q_player2, 7,8)
+            precision_player2 = copy.copy(test.test_vs_AI_player2(Q_player1, Q_player2, 7,8))
+            history_player2.append(round(precision_player2,2))
+            print(history_player2)
+            test.test_vs_random(Q_player2, 7,8)
+            #os.system('spd-say "Press Enter to continue"')
+            #tinput("Press Enter to continue...")
 
-    train_freq = 50
-    batch_size = 20
-    gamma = 0.9
-    epsilon = 0.05
-    learn_rate=0.01
-    n_epochs = 2
-
-
-    rewards_Wi_Lo_Dr_De = [10, -10, -0.1, 0]
-    number_of_moves = 20000
-    memory_size = 10000  # Let's set the memory capacity
- 
-    # Initialize memory
-    memory = []
-    # Create empty board
-    board = np.zeros([7, 8]).astype(int)
-    # Initialize NN
- 
-    Q = nn.create_NN(7, 8)
-    # Initialize first state
-    S = np.copy(board)
-
-    # FOR DEBUGGING
-    count_win = 0
-    count_lose = 0
-    train_freq = 10
-    batch_size = 5
-
-    for move in range(number_of_moves):
-        # Make one turn (agent plays a move, environment plays its move)
-        (S, a, r, S_prime) = copy.deepcopy(myFun.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon=epsilon))        
-#-----------------------------------------------------
-#           UPDATE MEMORY
-
-        # if memory is still no full
-        if len(memory) < memory_size:
-            # add experience to memory
-            memory.append((S, a, r, S_prime))
-        # otherwise we need to empty a slot
-        else:
-            # delete first element
-            memory.pop(0)
-            # add new memory
-
-            memory.append((S, a, r, S_prime))
-        # S_prime is the next state S
-        S = np.copy(S_prime)
-#----------------------------------------------------
-#           TRAINING
-
-        if (move > batch_size) and (move % train_freq == 0):
-       
-            batch = random.sample(memory, batch_size)
-            nn.train_my_NN(Q, batch, gamma, n_epochs)
-
-#-----------------------------------------------------
-#   THIS IS A SUPER WEIRD STEP... APPARENTLY I NEED TO TRAIN 
-#   THE NN A LITTLE BIT BEFORE LOADING THE OLD WEIGHTS \('.')/
-        if move == 3*batch_size:
-            # Restore the weights
-            Q.load_weights('./weights.h5')
-# #------------------------------------------------------
-# #           DYNAMIC EPSILON
-
-#         # Change epsilon after 1K moves
-#         if move > 5000:
-#             epsilon = 0.1
-#         if move > 10000:
-#             epsilon = 0.05
-#------------------------------------------------------- 
-
-#---------- END LEARNING LOOP -------------------------
-
-
-#-------------------------------------------------------   
-#      SAVE WEIGHTS
-    Q.save_weights('./weights.h5')
-
-#------------------------------------------------------
-#          TEST 
-    
-
-    count_win = 0
-    count_lose = 0
-    count_draw = 0
-    for move in range(number_of_moves):
-        S, a, r, S_prime = copy.deepcopy(myFun.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon=0))
-        if r == rewards_Wi_Lo_Dr_De[0]:
-            count_win += 1
-        if r == rewards_Wi_Lo_Dr_De[1]:
-            count_lose += 1
-        if r == rewards_Wi_Lo_Dr_De[2]:
-            count_draw +=1
-        # S_prime is the next state S
-        S = np.copy(S_prime)
-
-    print("number of moves:")
-    print(number_of_moves)
-    print("training frequency:")
-    print(train_freq)
-    print("\nNumber games won:")
-    print(count_win)
-    print("Number games lost:")
-    print(count_lose)
-    print("Number of games ended in a draw:")
-    print(count_draw)
-    num_games = count_win + count_lose + count_draw
-    print("The AI won the ", round((count_win/(num_games))*100,2), "% ", "of the games." )
-    
-#------------------------------------------------------------------------------------
 
 
 if __name__ == '__main__':

@@ -5,14 +5,20 @@ from random import *
 import neural_network as nn
 
 
-def remove_one_experience(S, a, r, S_prime):
-    slot_to_be_removed = randint(0, len(r) - 1)
-    S.pop(slot_to_be_removed)
-    a.pop(slot_to_be_removed)
-    r.pop(slot_to_be_removed)
-    S_prime.pop(slot_to_be_removed)
+#--------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
+#   LOW LEVEL FUNCTIONS 
+
+def is_full(board, empty=0):
+    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros
+    # there are in board[0]
+    if np.count_nonzero(board[0] == empty) == 0:
+        return True
+    return False
 
 
+#--------------------------------------------------------------------------------------------------------
 def next_cell_on_the_diagonal(matrix, current_row, current_column, direction):
     if direction == 1:
         # check we are in the boundaries
@@ -29,6 +35,7 @@ def next_cell_on_the_diagonal(matrix, current_row, current_column, direction):
             return matrix[current_row - 1][current_column - 1], current_row - 1, current_column - 1
 
 
+#--------------------------------------------------------------------------------------------------------
 def prev_cell_on_the_diagonal(matrix, current_row, current_column, direction):
     if direction == 1:
         # check we are in the boundaries
@@ -45,92 +52,21 @@ def prev_cell_on_the_diagonal(matrix, current_row, current_column, direction):
             return matrix[current_row + 1][current_column + 1], current_row + 1, current_column + 1
 
 
-#---------------------------------------------------------------------------------------------------
-def states_that_can_be_reached_from(board, color):
-    possible_states = []
-    for i in range(len(board[0])):
-        row = get_last_occupied_row_in_column(board, i, empty=0)
-        if row > 0:
-            possible_states.append(copy.copy(board))
-            possible_states[-1][row - 1][i] = color
-    return possible_states
-
-#---------------------------------------------------------------------------------------------------
-# This the implementation of a random environment
-def ambient_move(board, ambient_color, empty=0):
-    ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
-    return ambient_move_row, ambient_move_column
-
-#---------------------------------------------------------------------------------------------------
-# Function that makes the agent play according to the epsilon-greedy strategy
-# Takes in input the current state (board), the agent color (=1), the epsilon parameter,
-# the NN Q and the color of empty "pixels" (=0)
-def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
-    # decide if we play randomly (epsilon) or following the value function (1-epsilon)
-    if random() < epsilon:
-        # the agent play randomly
-        agent_move_row, agent_move_column = copy.deepcopy(random_move(board, agent_color, empty))
-        return agent_move_row, agent_move_column
-    else:
-        # the agent makes his move based on the value function
-        available_actions = []
-        for i in range(len(board[0])):
-        # check whether the upper slot is empty
-            if board[0][i] == empty:
-                available_actions.append(int(i))
-        # let's invoke the NN
-        action_values = nn.Q_eval(Q, board)
-        # we choose the max among the available ones
-        # first we need to create a mask before applying argmax
-        m = np.ones(action_values.size, dtype=bool)
-        m[available_actions] = False
-        masked_action_values = np.ma.array(action_values, mask=m)
-        agent_move_column = np.argmax(masked_action_values)
-        agent_move_row = get_last_occupied_row_in_column(board, agent_move_column, empty) - 1
-        return agent_move_row, agent_move_column
-
 #--------------------------------------------------------------------------------------------------------
-def random_move(board, color_of_player, empty=0):
-    # expect a non full board as input
-    extraction_list = []
-    # collect the indexes of the columns wich are not full
-    for i in range(len(board[0])):
-        # check whether the upper slot is empty
-        if board[0][i] == empty:
-            extraction_list.append(int(i))
-    # random extract from the available columns
-    extraction_index = randint(0, len(extraction_list) - 1)
-    column_move = extraction_list[extraction_index]
-    row_move = get_last_occupied_row_in_column(board, column_move, empty) - 1
-    return row_move, column_move
-
-
-
-
-#----------------------------------------------------------------------------------------------------------
 def get_last_occupied_row_in_column(board, column, empty=0):
     # !!Warning: it returns len(board) if the column is empty !!
     # !!Warning len(board) is out of bound!!
-
     row = len(board)
     while row > 0 and board[row - 1][column] != empty:
         row = row - 1
     return row
 
-#---------------------------------------------------------------------------------------------------------
-def is_full(board, empty=0):
-    # np.count_nonzero(board[0] == 0) it seems counterintuitive but this line actually counts how many zeros
-    # there are in board[0]
-    if np.count_nonzero(board[0] == empty) == 0:
-        return True
-    return False
 
 #--------------------------------------------------------------------------------------------------------
 def is_winning(board, last_move_row=-2, last_move_column=0, empty=0, red=-1, yellow=1):
     # note this function expect that last_move_column is a legal value and that row is not empty
     # if last_move_row=-2 it means we do not know the last_move_row and we have to find it using the function
     # "get_last_occupied_row_in_column(board, last_move_column, empty)"
-
     # find the row of the last move
     if last_move_row == -2:
         last_move_row = get_last_occupied_row_in_column(board, last_move_column, empty)
@@ -207,3 +143,114 @@ def is_winning(board, last_move_row=-2, last_move_column=0, empty=0, red=-1, yel
         return True
 
     return False
+
+
+#--------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------------
+#   FUNCTIONS FOR MAKING AGENT AND ENVIRONMENT PLAY
+
+def actions_available(board):
+    actions_available = []
+    for i in range(len(board[0])):
+        row = get_last_occupied_row_in_column(board, i, empty=0)
+        if row > 0:
+            actions_available.append(i)
+    return actions_available
+
+#--------------------------------------------------------------------------------------------------------
+def random_move(board, color_of_player, empty=0):
+    # expect a non full board as input
+    extraction_list = []
+    # collect the indexes of the columns wich are not full
+    for i in range(len(board[0])):
+        # check whether the upper slot is empty
+        if board[0][i] == empty:
+            extraction_list.append(int(i))
+    # random extract from the available columns
+    extraction_index = randint(0, len(extraction_list) - 1)
+    column_move = extraction_list[extraction_index]
+    row_move = get_last_occupied_row_in_column(board, column_move, empty) - 1
+    return row_move, column_move
+
+#--------------------------------------------------------------------------------------------------------
+def ambient_move(board, ambient_color, empty=0):
+    ambient_move_row, ambient_move_column = random_move(board, ambient_color, empty)
+    return ambient_move_row, ambient_move_column
+
+#--------------------------------------------------------------------------------------------------------
+def AI_environment(board, Q, epsilon=0.2, environment_color=-1, empty=0):
+        # decide if we play randomly (epsilon) or following the value function (1-epsilon)
+    if random() < epsilon:
+        # the agent play randomly
+        environment_move_row, environment_move_column = copy.deepcopy(random_move(board, environment_color, empty))
+        return environment_move_row, environment_move_column
+    else:
+        # the agent makes his move based on the value function
+        available_actions = []
+        for i in range(len(board[0])):
+        # check whether the upper slot is empty
+            if board[0][i] == empty:
+                available_actions.append(int(i))
+        # let's invoke the NN
+        action_values = nn.Q_eval(Q, board)
+        # we choose the max among the available ones
+        # first we need to create a mask before applying argmax
+        m = np.ones(action_values.size, dtype=bool)
+        m[available_actions] = False
+        masked_action_values = np.ma.array(action_values, mask=m)
+        environment_move_column = np.argmax(masked_action_values)
+        environment_move_row = get_last_occupied_row_in_column(board, environment_move_column, empty) - 1
+        return environment_move_row, environment_move_column
+
+
+#--------------------------------------------------------------------------------------------------------
+# Function that makes the agent play according to the epsilon-greedy strategy
+# Takes in input the current state (board), the agent color (=1), the epsilon parameter,
+# the NN Q and the color of empty "pixels" (=0)
+def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
+    # decide if we play randomly (epsilon) or following the value function (1-epsilon)
+    if random() < epsilon:
+        # the agent play randomly
+        agent_move_row, agent_move_column = copy.deepcopy(random_move(board, agent_color, empty))
+        return agent_move_row, agent_move_column
+    else:
+        # the agent makes his move based on the value function
+        available_actions = []
+        for i in range(len(board[0])):
+        # check whether the upper slot is empty
+            if board[0][i] == empty:
+                available_actions.append(int(i))
+        # let's invoke the NN
+        action_values = nn.Q_eval(Q, board)
+        # we choose the max among the available ones
+        # first we need to create a mask before applying argmax
+        m = np.ones(action_values.size, dtype=bool)
+        m[available_actions] = False
+        masked_action_values = np.ma.array(action_values, mask=m)
+        agent_move_column = np.argmax(masked_action_values)
+        agent_move_row = get_last_occupied_row_in_column(board, agent_move_column, empty) - 1
+        return agent_move_row, agent_move_column
+
+
+#--------------------------------------------------------------------------------------------------------
+def human_move(board, human_color = -1, empty=0):
+    # expect a non full board as input
+    available_actions = []
+    # collect the indexes of the columns wich are not full
+    for i in range(len(board[0])):
+        # check whether the upper slot is empty
+        if board[0][i] == empty:
+            available_actions.append(int(i))
+    is_action_legal = False
+    while is_action_legal == False:
+        print("Make your move, human:")
+        column_move = int(input())
+        if column_move in available_actions:
+            row_move = get_last_occupied_row_in_column(board, column_move, empty) - 1
+            is_action_legal = True
+    return row_move, column_move
+            
+    
+
+    return row_move, column_move
