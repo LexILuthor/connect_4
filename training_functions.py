@@ -9,6 +9,8 @@ import neural_network as nn
 import memory as mem
 
 
+import time 
+
 
 # In this training algorithm the target is computed by using a copy of the NN
 # which is frozen in time and it is updated every "freeze_steps"
@@ -85,6 +87,11 @@ def freeze_train_player1(
     S_player1 = np.zeros([n_rows, n_columns]).astype(int)
     for move in range(number_of_moves):
         os.system("clear")
+
+        #  # for debugging
+        #print(S_player1)
+        #time.sleep(2)
+
     	# print move number and percentage
         perc = round((move/number_of_moves)*100, 2)
         print("\nStep ", move, ". Training is ", perc, " % complete. \n", sep="")
@@ -168,6 +175,11 @@ def freeze_train_player2(
     S_player2 = copy.copy(board)
     for move in range(number_of_moves):
         os.system("clear")
+
+        ## for debugging
+        #print(S_player2)
+        #time.sleep(2)
+
     	# print move number and percentage
         perc = round((move/number_of_moves)*100, 2)
         print("\nStep ", move, ". Training is ", perc, " % complete. \n", sep="")

@@ -37,9 +37,9 @@ import training_functions as train
 
 def main():
     N = 10
-    memory_size = 5000
-    n_rows = 7
-    n_columns = 8
+    memory_size = 1000
+    n_rows = 6
+    n_columns = 7
     Q_player1 = nn.load_NN("dense_sigmoid_pl1", n_rows, n_columns)
     Q_player2 = nn.load_NN("dense_sigmoid_pl2", n_rows, n_columns)
     #Q_player1 = nn.create_NN(n_rows, n_columns)
@@ -59,8 +59,15 @@ def main():
     while precision_VS_random < 98.5:
         history_player1 = []
         precision_player1 = 0
-        # initialize memory for player 1
-        mem1 = memory.create_memory(memory_size, n_rows, n_columns, Q_player1, epsilon = 1)
+        # initialize memory for player 1 
+        mem1 = memory.create_memory_player1(
+        memory_size, 
+        n_rows, 
+        n_columns, 
+        Q_agent = Q_player1, 
+        Q_environment = Q_player2,
+        epsilon = 0.2)
+        # Training cycle for player 1
         while precision_player1 < 95 :
             #Q_player1 = nn.load_NN("dense_leaky_relu_pl1", n_rows, n_columns)
             Q_player1 = copy.copy(train.freeze_train_player1(
@@ -70,29 +77,36 @@ def main():
             n_columns, 
             memory_player1 = mem1,
             episodic = False,
-            number_of_moves = 1000,
-            freeze_steps_player1 = 50,
+            number_of_moves = 100,
+            freeze_steps_player1 = 5,
             train_freq_player1 = 1,
-            batch_size_player1 = 30,
+            batch_size_player1 = 100,
             rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
-            epsilon_player1 = 0.1,
+            epsilon_player1 = 0.15,
             gamma = 0.95,
-            n_epochs = 2
+            n_epochs = 4
             ))
             nn.save_NN(Q_player1, "dense_sigmoid_pl1")
-            test.test_vs_AI_player1(Q_player1, Q_player2, 7,8)
-            precision_player1 = copy.copy(test.test_vs_AI_player1(Q_player1, Q_player2, 7,8))
-            history_player1.append(round(precision_player1,2))
+            test.test_vs_AI_player1(Q_player1, Q_player2, n_rows, n_columns)
+            precision_player1 = copy.copy(test.test_vs_AI_player1(Q_player1, Q_player2, n_rows, n_columns))
+            history_player1.append(round(precision_player1, 2))
             print(history_player1)
             # keep track of precision vs random
-            precision_VS_random = test.test_vs_random(Q_player1, 7,8)
+            precision_VS_random = test.test_vs_random(Q_player1, n_rows, n_columns)
             #os.system('spd-say "Press Enter to continue"')
             #input("Press Enter to continue...")
 #-----------------------------------------------------------------------
         history_player2 = []
         precision_player2 = 0
         # Initialize memory for player 2
-        mem2 = memory.create_memory(memory_size, n_rows, n_columns, Q_player2, epsilon = 1)
+        mem2 = memory.create_memory_player2(
+        memory_size, 
+        n_rows, 
+        n_columns, 
+        Q_agent = Q_player2, 
+        Q_environment = Q_player1, 
+        epsilon = 0.2)
+        # Training cycle for player 2
         while precision_player2 < 95 :
             #Q_player2 = nn.load_NN("dense_leaky_relu_pl2", n_rows, n_columns)
             Q_player2 = copy.copy(train.freeze_train_player2(
@@ -102,21 +116,21 @@ def main():
             n_columns, 
             memory_player2 = mem2,
             episodic = False,
-            number_of_moves = 1000,
-            freeze_steps_player2 = 50,
+            number_of_moves = 100,
+            freeze_steps_player2 = 5,
             train_freq_player2 = 1,
-            batch_size_player2 = 30,
+            batch_size_player2 = 100,
             rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
-            epsilon_player2 = 0.1,
+            epsilon_player2 = 0.15,
             gamma = 0.95,
-            n_epochs = 2
+            n_epochs = 4
             ))
-            nn.save_NN(Q_player2, "dense_sigmoid_pl1")
-            test.test_vs_AI_player2(Q_player1, Q_player2, 7,8)
-            precision_player2 = copy.copy(test.test_vs_AI_player2(Q_player1, Q_player2, 7,8))
+            nn.save_NN(Q_player2, "dense_sigmoid_pl2")
+            test.test_vs_AI_player2(Q_player1, Q_player2, n_rows, n_columns)
+            precision_player2 = copy.copy(test.test_vs_AI_player2(Q_player1, Q_player2, n_rows, n_columns))
             history_player2.append(round(precision_player2,2))
             print(history_player2)
-            test.test_vs_random(Q_player2, 7,8)
+            test.test_vs_random(Q_player2, n_rows, n_columns)
             #os.system('spd-say "Press Enter to continue"')
             #tinput("Press Enter to continue...")
 

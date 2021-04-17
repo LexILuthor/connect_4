@@ -76,18 +76,41 @@ def play_move_vs_AI_environment(
     inter_state[agent_move_row, agent_move_column] = copy.copy(agent_color)
     # check if the agent won
     if secFun.is_winning(inter_state, agent_move_row, agent_move_column, empty):
-        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
+        # Since we are in a terminal state,
+        # therefore S_prime is set to be the initial state and the game start again
+        if is_agent_player1 == True:
+            S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
+        else:
+            board = np.zeros(np.shape(S)).astype(int)
+            (first_move_row, first_move_col) = secFun.agent_move_following_epsilon_Q(
+                board = board, 
+                agent_color = ambient_color,
+                epsilon = epsilon_environment, 
+                Q = Q_environment
+            )
+            board[first_move_row, first_move_col] = ambient_color
+            S_prime = copy.deepcopy(board)
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[0])
         return current_state, a, r, S_prime
     
     # check if board is full then it is a draw
     if secFun.is_full(inter_state, empty):
-        # Since we are in a terminal state S_prime is set to be the empty board so the game start again
-        S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
+        # Since we are in a terminal state,
+        # therefore S_prime is set to be the initial state and the game start again
+        if is_agent_player1 == True:
+            S_prime = copy.deepcopy(np.zeros(np.shape(S)).astype(int))
+        else:
+            board = np.zeros(np.shape(S)).astype(int)
+            (first_move_row, first_move_col) = secFun.agent_move_following_epsilon_Q(
+                board = board, 
+                agent_color = ambient_color,
+                epsilon = epsilon_environment, 
+                Q = Q_environment
+            )
+            board[first_move_row, first_move_col] = ambient_color
+            S_prime = copy.deepcopy(board)
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
         return current_state, a, r, S_prime
-
     # ambient makes a  move
     ambient_move_row, ambient_move_column = copy.deepcopy(secFun.AI_environment(inter_state, Q_environment, epsilon_environment, ambient_color, empty))
     S_prime = copy.deepcopy(inter_state)
@@ -130,7 +153,6 @@ def play_move_vs_AI_environment(
             board[first_move_row, first_move_col] = ambient_color
             S_prime = copy.deepcopy(board)
 
-        r = copy.deepcopy(rewards_Wi_Lo_Dr_De[1])
         r = copy.deepcopy(rewards_Wi_Lo_Dr_De[2])
         return current_state, a, r, S_prime
 

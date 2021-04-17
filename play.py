@@ -13,11 +13,11 @@ wanna_play = True
 
 # Initialize AI
 
-Q_agent = nn.load_NN("dense_2_hidden_fat_pl2", 7,8)
-Q_environment = nn.load_NN("test", 7,8)
+Q_agent = nn.load_NN("dense_sigmoid_pl1", 6,7)
+Q_environment = nn.load_NN("test", 6,7)
 
 
-def wrapper(wanna_play, agent_color = 1, human_color = -1, n_actions = 8):
+def wrapper(wanna_play, agent_color = 1, human_color = -1, n_actions = 7):
 	while wanna_play == True:
 		os.system("clear")
 		print("Do you want to play a game of connect 4? (y/n)")
@@ -29,7 +29,7 @@ def wrapper(wanna_play, agent_color = 1, human_color = -1, n_actions = 8):
 			print("Great! Let's play!")
 			os.system("clear")
 			# Initialize board
-			board = np.zeros([7,8]).astype(int)
+			board = np.zeros([6,7]).astype(int)
 			is_game_ended = False
 			while is_game_ended == False:
 				# AI plays
