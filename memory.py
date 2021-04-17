@@ -50,8 +50,8 @@ def create_memory_player2(
         S,
         rewards_Wi_Lo_Dr_De,
         is_agent_player1 = False,
-        agent_color=1, 
-        ambient_color=-1, 
+        agent_color=-1, 
+        ambient_color=1, 
         epsilon_agent=0.1,
         epsilon_environment = 0.1,
         empty = 0))        
