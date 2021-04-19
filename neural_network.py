@@ -13,18 +13,18 @@ import secondary_Functions as secFun
 #	CREATE CNN AND COMPILE
 def create_NN(n_rows, n_columns, learn_rate = 0.01):
     Q = tf.keras.Sequential([
-        #layers.Conv2D(100, (4, 4), activation='relu', input_shape=(n_rows, n_columns, 1)),
+        layers.Conv2D(40, (2, 2), activation='sigmoid', padding = 'same', input_shape=(n_rows, n_columns, 1)),
         #layers.MaxPooling2D((2,2)),
         #layers.Dropout(0.1),
-        #layers.Conv2D(30, (2, 2), activation='relu'),
+        layers.Conv2D(40, (2, 2), activation='sigmoid', padding = 'same'),
         #layers.MaxPooling2D((1,1)),
         #layers.Dropout(0.1),  # This is for regularization
         layers.Flatten(),
         #layers.Dense(200, activation='relu'),  # This can be changed later
         #layers.Dropout(0.1),
-        layers.Dense(256, activation='sigmoid'),  # This can be changed later
-        layers.Dropout(0.1),
-        layers.Dense(256, activation='sigmoid'),  # This can be changed later
+        #layers.Dense(256, activation='sigmoid'),  # This can be changed later
+        #layers.Dropout(0.2),
+        #layers.Dense(100, activation='sigmoid'),  # This can be changed later
         layers.Dropout(0.1),
         layers.Dense(n_columns, activation='sigmoid')  # The number of actions is equal to the number of columns
     ])

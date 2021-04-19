@@ -51,7 +51,7 @@ def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilo
         return current_state, a, r, S_prime
 
 # ----------------------------------------------------------------------------------------------------------
-# FOR PLAYER 2
+# FOR PLAYER 
 # Function to make the agent play only one move and returns a 4-tuple (s,a,r,s') of experience
 # If it ends in a terminal state, then S' is set to the empty board. 
 #

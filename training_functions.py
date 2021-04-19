@@ -71,7 +71,6 @@ def freeze_train_player1(
 	episodic = False,
 	number_of_moves = 10000,
 	freeze_steps_player1 = 500,
-	train_freq_player1 = 2,
 	batch_size_player1 = 10,
 	rewards_Wi_Lo_Dr_De = [10, -10, -0.1, 0],
 	epsilon_player1 = 0.1,
@@ -121,11 +120,10 @@ def freeze_train_player1(
         if (move % freeze_steps_player1 == 0):
             Q_target_player1 = copy.copy(Q_player1)
         # training
-        if (move % train_freq_player1 == 0):
-            batch_player1 = random.sample(memory_player1, batch_size_player1)
-            # ********************************************************** CER (zhang burton) TO clean up
-            batch_player1.append(t1) 
-            nn.train_my_NN(Q_player1, Q_target_player1, batch_player1, gamma, n_epochs)
+        batch_player1 = random.sample(memory_player1, batch_size_player1)
+        # ********************************************************** CER (zhang burton) TO clean up
+        batch_player1.append(t1) 
+        nn.train_my_NN(Q_player1, Q_target_player1, batch_player1, gamma, n_epochs)
         # check whether the parameter "episodic" is True or False
         if episodic == True:
             # check whether it is the end of the episode  
@@ -150,7 +148,6 @@ def freeze_train_player2(
 	episodic = False,
 	number_of_moves = 50000,
 	freeze_steps_player2 = 100,
-	train_freq_player2 = 2,
 	batch_size_player2 = 10,
 	rewards_Wi_Lo_Dr_De = [10, -10, -0.1, 0],
 	epsilon_player2 = 0.1,
@@ -178,8 +175,9 @@ def freeze_train_player2(
 
         ## for debugging
         #print(S_player2)
-        #time.sleep(2)
-
+        #print(nn.Q_eval(Q_player2, S_player2))
+        #input("Press Enter to continue...")
+        
     	# print move number and percentage
         perc = round((move/number_of_moves)*100, 2)
         print("\nStep ", move, ". Training is ", perc, " % complete. \n", sep="")
@@ -208,12 +206,11 @@ def freeze_train_player2(
 		# freeze
         if (move % freeze_steps_player2 == 0):
             Q_target_player2 = copy.copy(Q_player2)
-        # training player 2
-        if (move % train_freq_player2 == 0):
-            batch_player2 = random.sample(memory_player2, batch_size_player2)
-            # ********************************************************** CER (zhang burton) TO clean up
-            batch_player2.append(t2) 
-            nn.train_my_NN(Q_player2, Q_target_player2, batch_player2, gamma, n_epochs)
+        
+        batch_player2 = random.sample(memory_player2, batch_size_player2)
+        # ********************************************************** CER (zhang burton) TO clean up
+        batch_player2.append(t2) 
+        nn.train_my_NN(Q_player2, Q_target_player2, batch_player2, gamma, n_epochs)
         # check whether the parameter "episodic" is True or False
         if episodic == True:
             # check whether it is the end of the episode  

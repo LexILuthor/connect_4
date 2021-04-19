@@ -3,6 +3,7 @@ import numpy as np
 
 import play_move_functions as play
 import secondary_Functions as secFun
+import neural_network as nn
 
 #----------------------------------------------------------------------------------
 #    This function test performance of an AI agent as PLAYER 1 vs random environment
@@ -59,6 +60,9 @@ def test_vs_AI_player1(
     count_lose = 0
     count_draw = 0
     for move in range(number_of_moves):
+        # debugging
+        #print(S)
+
         S, a, r, S_prime = copy.deepcopy(play.play_move_vs_AI_environment(
             Q_agent,
             Q_environment, 
@@ -68,6 +72,9 @@ def test_vs_AI_player1(
             epsilon_environment = 0, 
             empty=0
             ))
+        # debugging
+        #print(r)
+        #input("press enter...")
         if r == rewards_Wi_Lo_Dr_De[0]:
             count_win += 1
         if r == rewards_Wi_Lo_Dr_De[1]:
@@ -118,16 +125,23 @@ def test_vs_AI_player2(
     count_lose = 0
     count_draw = 0
     for move in range(number_of_moves):
+        #print(S)
+        #print(nn.Q_eval(Q_agent, S))
         S, a, r, S_prime = copy.deepcopy(play.play_move_vs_AI_environment(
-            Q_agent,
-            Q_environment, 
-            S, 
-            rewards_Wi_Lo_Dr_De,
+            Q_agent = Q_agent,
+            Q_environment = Q_environment, 
+            S=S, 
+            rewards_Wi_Lo_Dr_De = rewards_Wi_Lo_Dr_De,
             is_agent_player1 = False, 
+            agent_color = -1,
+            ambient_color = 1,
             epsilon_agent = 0, 
             epsilon_environment = 0, 
             empty=0
             ))
+        #print(r)
+
+        #input("press enter...")
         if r == rewards_Wi_Lo_Dr_De[0]:
             count_win += 1
         if r == rewards_Wi_Lo_Dr_De[1]:
