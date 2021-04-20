@@ -33,7 +33,7 @@ def wrapper(wanna_play, agent_color = 1, human_color = -1, n_actions = 7):
 			is_game_ended = False
 			while is_game_ended == False:
 				# AI plays
-				agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, 0, Q_agent, 0)
+				agent_move_row, agent_move_column = secFun.agent_move_following_epsilon_Q(board, agent_color, 0, Q_agent, 0, check_wins = False)
 				print("The AI plays: ", agent_move_column)
 				board[agent_move_row, agent_move_column] = agent_color
 				print(board)

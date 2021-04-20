@@ -19,7 +19,7 @@ def test_vs_random(
     count_lose = 0
     count_draw = 0
     for move in range(number_of_moves):
-        S, a, r, S_prime = copy.deepcopy(play.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon = 0, empty=0))
+        S, a, r, S_prime = copy.deepcopy(play.play_move(Q, S, rewards_Wi_Lo_Dr_De, epsilon = 0, empty=0, check_wins = False))
         if r == rewards_Wi_Lo_Dr_De[0]:
             count_win += 1
         if r == rewards_Wi_Lo_Dr_De[1]:
@@ -70,6 +70,7 @@ def test_vs_AI_player1(
             rewards_Wi_Lo_Dr_De, 
             epsilon_agent = 0, 
             epsilon_environment = 0, 
+            check_wins = False,
             empty=0
             ))
         # debugging

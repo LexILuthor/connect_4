@@ -9,9 +9,9 @@ import secondary_Functions as secFun
 # Function to make the agent play only one move and returns a 4-tuple (s,a,r,s') of experience
 # If it ends in a terminal state, then S' is set to the empty board. 
 #
-def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0):
+def play_move(Q, S, rewards_Wi_Lo_Dr_De, agent_color=1, ambient_color=-1, epsilon=0.1, empty = 0,  check_wins = True):
     # agent makes a move
-    agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty))
+    agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon, Q, empty, check_wins = check_wins))
     current_state = copy.deepcopy(S)
     a = copy.copy(agent_move_column)
     # define the intermidiate state
@@ -65,10 +65,11 @@ def play_move_vs_AI_environment(
     ambient_color=-1, 
     epsilon_agent=0.1,
     epsilon_environment = 0.1,
+    check_wins = True,
     empty = 0):
 
     # agent makes a move
-    agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon_agent, Q_agent, empty))
+    agent_move_row, agent_move_column = copy.deepcopy(secFun.agent_move_following_epsilon_Q(S, agent_color, epsilon_agent, Q_agent, empty,  check_wins= check_wins))
     current_state = copy.deepcopy(S)
     a = copy.copy(agent_move_column)
     # define the intermidiate state

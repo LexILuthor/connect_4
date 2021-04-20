@@ -208,7 +208,7 @@ def AI_environment(board, Q, epsilon=0.2, environment_color=-1, empty=0):
 # Function that makes the agent play according to the epsilon-greedy strategy
 # Takes in input the current state (board), the agent color (=1), the epsilon parameter,
 # the NN Q and the color of empty "pixels" (=0)
-def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
+def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0, check_wins = True):
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
         # the agent play randomly
