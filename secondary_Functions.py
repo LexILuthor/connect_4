@@ -221,6 +221,13 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
         # check whether the upper slot is empty
             if board[0][i] == empty:
                 available_actions.append(int(i))
+        # check whether there is an immediate win
+        inter_state = copy.deepcopy(board)
+        for action in available_actions:
+            row = copy.copy(get_last_occupied_row_in_column(board, action, empty) - 1)
+            inter_state[row, action] = agent_color
+            if is_winning(inter_state, row, action) == True:
+                return row, action
         # let's invoke the NN
         action_values = nn.Q_eval(Q, board)
         # we choose the max among the available ones

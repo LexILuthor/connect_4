@@ -13,7 +13,7 @@ wanna_play = True
 
 # Initialize AI
 
-Q_agent = nn.load_NN("cnn_sigmoid_pl1", 6,7)
+Q_agent = nn.load_NN("cnn_pl1", 6,7)
 Q_environment = nn.load_NN("test", 6,7)
 
 

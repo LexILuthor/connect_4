@@ -37,19 +37,19 @@ import training_functions as train
 # cnn_sigmoid_pl1    CNN + 2 dense hidden layers (256 neur per layer)
 # cnn_sigmoid_pl2    CNN + 2 dense hidden layers (256 neur per layer)
 
-# cnn_sigmoid_pl1    CNN + CNN + outp
-# cnn_sigmoid_pl2    CNN + CNN + outp
+# cnn_pl1    CNN + CNN + outp
+# cnn_pl2    CNN + CNN + outp
 
 
 def main():
     N = 10
-    memory_size = 1000
+    memory_size = 100
     n_rows = 6
     n_columns = 7
-    #Q_player1 = nn.load_NN("cnn_sigmoid_pl1", n_rows, n_columns)
-    #Q_player2 = nn.load_NN("cnn_sigmoid_pl2", n_rows, n_columns)
-    Q_player1 = nn.create_NN(n_rows, n_columns)
-    Q_player2 = nn.create_NN(n_rows, n_columns)
+    Q_player1 = nn.load_NN("cnn_pl1", n_rows, n_columns)
+    Q_player2 = nn.load_NN("cnn_pl2", n_rows, n_columns)
+    #Q_player1 = nn.create_NN(n_rows, n_columns)
+    #Q_player2 = nn.create_NN(n_rows, n_columns)
     # compile
     Q_player1.compile(optimizer='adam',
               loss='mse',
@@ -62,7 +62,7 @@ def main():
 
 #-----------------------------------------------------------------------------------
     precision_VS_random = 0
-    while precision_VS_random < 98.5:
+    while precision_VS_random < 100:
         history_player1 = []
         precision_player1 = 0
         # initialize memory for player 1 
@@ -78,7 +78,7 @@ def main():
         #print(mem1)
         #time.sleep(5)
         # Training cycle for player 1
-        while precision_player1 < 95 :
+        while precision_player1 < 99 :
             #Q_player1 = nn.load_NN("dense_leaky_relu_pl1", n_rows, n_columns)
             Q_player1 = copy.copy(train.freeze_train_player1(
             Q_player1,
@@ -89,11 +89,11 @@ def main():
             episodic = False,
             number_of_moves = 1000,
             freeze_steps_player1 = 5,
-            batch_size_player1 = 100,
+            batch_size_player1 = 50,
             rewards_Wi_Lo_Dr_De = [10, -10, 1, 0],
             epsilon_player1 = 0.1,
             gamma = 0.9,
-            n_epochs = 4
+            n_epochs = 3
             ))
             nn.save_NN(Q_player1, "cnn_pl1")
             precision_player1 = copy.copy(test.test_vs_AI_player1(
