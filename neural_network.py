@@ -33,8 +33,8 @@ def initialize_NN(n_rows, n_columns):
 # Q_eval is a function that given our neural network Q and the current state s returns the values of all actions
 def Q_eval(Q, current_state):
     # we need to reshape the state into a tensor
-    (n_rows, n_columns) = np.shape(current_state[0])
-    state = np.reshape(current_state, (len(current_state), n_rows, n_columns, 1))
+    (n_rows, n_columns) = np.shape(current_state)
+    state = np.reshape(current_state, ( n_rows, n_columns, 1))
     result = Q(state)
     result = result[:, 0].numpy()
     return result

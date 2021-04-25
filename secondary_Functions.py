@@ -89,6 +89,43 @@ def ambient_move(board, Q_ambient, ambient_color, empty=0, epsilon=0):
     return ambient_move_row, ambient_move_column
 
 
+def min_max(state, prev_state, depth, maximizing_Player, player_color, opponent_color, Q):
+    difference_matrix = prev_state - state
+    move_row, move_column = np.nonzero(difference_matrix)
+    last_move = move_row[0], move_column[0]
+    if is_winning(state, last_move[1], last_move[0]):
+        if maximizing_Player:
+            return -10
+        else:
+            return 10
+    if is_full(state):
+        return 1
+
+    if depth == 0 and maximizing_Player is False:
+        return
+
+    # value_of_state = nn.Q_eval(Q, possible_states)
+    # value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
+
+
+def agent_move_following_min_max(board, agent_color, ambient_color, depth, epsilon, Q, empty=0):
+    # decide if we play randomly (epsilon) or following the value function (1-epsilon)
+    # the agent makes his move based on the value function
+    possible_states = states_that_can_be_reached_from(board, agent_color)
+
+    possible_states_value = [min_max(state, board, depth - 1, False, agent_color, ambient_color, Q) for state in
+                             possible_states]
+    max_index = np.argmax(possible_states_value)
+    chosen_state = possible_states[max_index]
+
+    difference_matrix = board - chosen_state
+    agent_move_row, agent_move_column = np.nonzero(difference_matrix)
+    agent_move_row = agent_move_row[0]
+    agent_move_column = agent_move_column[0]
+    board[agent_move_row][agent_move_column] = agent_color
+    return agent_move_row, agent_move_column
+
+
 def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     # decide if we play randomly (epsilon) or following the value function (1-epsilon)
     if random() < epsilon:
@@ -98,8 +135,8 @@ def agent_move_following_epsilon_Q(board, agent_color, epsilon, Q, empty=0):
     else:
         # the agent makes his move based on the value function
         possible_states = states_that_can_be_reached_from(board, agent_color)
-        value_of_state = nn.Q_eval(Q, possible_states)
-        # value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
+        #value_of_state = nn.Q_eval(Q, possible_states)
+        value_of_state = [nn.Q_eval(Q, possible_states[i]) for i in range(len(possible_states))]
         max_index = np.argmax(value_of_state)
         chosen_state = possible_states[max_index]
 
